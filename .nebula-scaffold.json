@@ -1,0 +1,52 @@
+{
+  "project": "lethebar-game-cultivation",
+  "stack": "data",
+  "platforms": [],
+  "components": [
+    {
+      "name": "client",
+      "stack": "data",
+      "dirs": [],
+      "platforms": []
+    }
+  ],
+  "language": {
+    "primary": "en-US",
+    "supported": [
+      "en-US",
+      "zh-CN"
+    ],
+    "external": "en-US"
+  },
+  "repoPolicy": {
+    "version": 1,
+    "provider": "github",
+    "profile": "strict",
+    "visibility": "public",
+    "defaultBranch": "main",
+    "codeowners": [
+      "@liberalluz"
+    ],
+    "review": {
+      "requirePullRequest": true,
+      "requiredApprovals": 2,
+      "requireCodeOwnerReview": true,
+      "dismissStaleApprovals": true,
+      "requireLastPushApproval": true,
+      "requireConversationResolution": true
+    },
+    "checks": {
+      "required": [],
+      "requireUpToDate": false
+    },
+    "linearHistory": true,
+    "push": {
+      "allowForce": false,
+      "allowDeletions": false
+    }
+  },
+  "created_at": "2026-11-07T23:00:32.719685+00:00",
+  "execution": {
+    "batch": "infra/tool/batch"
+  }
+}

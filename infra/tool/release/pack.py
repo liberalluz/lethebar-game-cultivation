@@ -26,9 +26,12 @@ with `release not found`.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
+import itertools
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -37,6 +40,7 @@ from pathlib import Path
 
 FIXED_TIME = (1980, 1, 1, 0, 0, 0)
 MANIFEST = "manifest.json"
+_SCRATCH = itertools.count(1)
 
 
 def gh() -> str:
@@ -193,13 +197,30 @@ def write_fixture(directory: Path) -> Path:
     return root
 
 
+@contextlib.contextmanager
+def scratch_dir():
+    """A writable directory for the self-test fixtures.
+
+    `tempfile.mkdtemp` creates its directory with mode 0o700. On Windows that
+    drops the inherited ACEs, so a restricted token cannot write into the
+    directory it just created, and the cleanup chmod fails too. The fixtures
+    hold nothing secret, so a plain directory with the default mode will do.
+    """
+    path = Path(tempfile.gettempdir()) / f"lethebar-self-test-{os.getpid()}-{next(_SCRATCH)}"
+    path.mkdir()
+    try:
+        yield path
+    finally:
+        shutil.rmtree(path, ignore_errors=True)
+
+
 def self_test() -> int:
     """Assert the properties this tool exists for, without touching the network."""
     problems: list[str] = []
     with (
-        tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as source,
-        tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as first,
-        tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as second,
+        scratch_dir() as source,
+        scratch_dir() as first,
+        scratch_dir() as second,
     ):
         root = write_fixture(Path(source))
         one = build(root, Path(first))

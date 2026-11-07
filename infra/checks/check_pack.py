@@ -13,10 +13,10 @@ fire is a rule that is not really there.
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import sys
-import tempfile
 import zipfile
 from pathlib import Path, PurePosixPath
 
@@ -183,9 +183,9 @@ def self_test() -> int:
     # self-test that cannot write its own fixtures proves nothing.
     scratch = Path(__file__).resolve().parents[2] / ".test-tmp"
     scratch.mkdir(parents=True, exist_ok=True)
-    temporary = tempfile.mkdtemp(prefix="lethebar-pack-", dir=scratch)
+    directory = scratch / f"fixtures-{os.getpid()}"
+    directory.mkdir(parents=True, exist_ok=True)
     try:
-        directory = Path(temporary)
         cases: list[tuple[str, Path, str, bool]] = [
             ("a clean pack", fixture(directory, "clean", good), "", True),
             (
@@ -276,7 +276,7 @@ def self_test() -> int:
             print(f"[{'ok' if ok else 'fail'}] {title}: {detail}")
             failures += 0 if ok else 1
     finally:
-        shutil.rmtree(temporary, ignore_errors=True)
+        shutil.rmtree(directory, ignore_errors=True)
 
     print(f"self-test: {len(cases)} cases, {failures} failure(s)")
     return 0 if failures == 0 else 1

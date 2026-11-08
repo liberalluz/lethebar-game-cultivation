@@ -6,8 +6,26 @@
     "ignore": [],
     "generated": []
   },
-  "checks": [],
+  "checks": [
+    {
+      "name": "translation",
+      "command": [
+        "python",
+        "infra/checks/check_translation.py"
+      ],
+      "cwd": "."
+    }
+  ],
   "pr_create": [],
-  "translate": [],
+  "translate": [
+    "python",
+    "infra/tool/merge/translate_body.py",
+    "--body",
+    "{body}",
+    "--locale",
+    "{locale}",
+    "--out",
+    "{out}"
+  ],
   "merge": []
 }

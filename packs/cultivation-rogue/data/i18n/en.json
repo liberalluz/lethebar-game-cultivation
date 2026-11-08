@@ -21,19 +21,47 @@
 		]
 	},
 	"a1-s03-sword": {
-		"text": "The master teaches you three sword formulas, each spoken only halfway. You practise them, and at night your back really does run hot. Half a year on you can split three feet of bluestone in one stroke, and the master watches from under the eaves without a word. You remember he never took you to meet the sect head, and that you never asked.",
+		"text": "She nods: \"Then do not ask. Keep practising.\" The master teaches you three sword formulas, each spoken only halfway. You practise them, and at night your back really does run hot. Half a year on you can split three feet of bluestone in one stroke, and the master watches from under the eaves without a word. You remember he never took you to meet the sect head, and that you never asked.",
 		"choices": []
 	},
 	"a1-s03-body": {
-		"text": "The second brother gives you a jar of medicinal wine and says a hundred days of soaking and the iron body comes by itself. On the seventieth day the whole west wall collapses, opening onto an empty room and a floor of old bricks. He laughs from the doorway and says the courtyard was stacked out of bricks from the start.",
+		"text": "She tucks the rope into her sleeve: \"Then soak the full hundred days.\" The second brother gives you a jar of medicinal wine and says a hundred days of soaking and the iron body comes by itself. On the seventieth day the whole west wall collapses, opening onto an empty room and a floor of old bricks. He laughs from the doorway and says the courtyard was stacked out of bricks from the start.",
 		"choices": []
 	},
 	"a1-s03-turn-sword": {
-		"text": "You hand the wooden sword back: \"You first, master.\" He does not take it. You ask again: \"If I have a sword-bone, what are you afraid of?\" His fingers curl inside his sleeve and he turns and walks away. The next day the sect head sends for you — not because you split the stone, but because you asked.",
+		"text": "She pushes the whetstone back a foot: \"Good question.\" You hand the wooden sword back: \"You first, master.\" He does not take it. You ask again: \"If I have a sword-bone, what are you afraid of?\" His fingers curl inside his sleeve and he turns and walks away. The next day the sect head sends for you — not because you split the stone, but because you asked.",
 		"choices": []
 	},
 	"a1-s03-turn-body": {
-		"text": "You crouch and pull the straw rope from the gap; a brickworks mark is tied into it. The second brother's smile stops where it is. You say: \"You replaced this wall. You bought the bricks.\" He does not deny it. He only asks: \"So what do you believe now?\"",
+		"text": "She puts the rope back in your hand: \"Then go ask the brickworks yourself.\" You crouch and pull the straw rope from the gap; a brickworks mark is tied into it. The second brother's smile stops where it is. You say: \"You replaced this wall. You bought the bricks.\" He does not deny it. He only asks: \"So what do you believe now?\"",
 		"choices": []
+	},
+	"a1-voice-sword-believe": {
+		"text": "The master leaves; only the senior sister stays in the corridor. She pushes the whetstone to your feet: \"That sentence in your head, I heard it.\" You say you said nothing. \"I know,\" she says.",
+		"choices": [
+			"(Inward) He truly wants me to succeed.",
+			"(Inward) He is testing me like a blade."
+		]
+	},
+	"a1-voice-sword-turn": {
+		"text": "After your question the room is quiet for a long time. The master leaves, and the senior sister pulls the door shut: \"What you said in your head was crueller than what you said aloud.\"",
+		"choices": [
+			"(Inward) He truly wants me to succeed.",
+			"(Inward) He is testing me like a blade."
+		]
+	},
+	"a1-voice-body-believe": {
+		"text": "The bricks are knee-high. The second brother goes to call someone to repair the wall. The senior sister crouches and winds the straw rope around her finger: \"That sentence in your head, I heard it.\"",
+		"choices": [
+			"(Inward) He truly wants me to succeed.",
+			"(Inward) This courtyard was stacked out of bricks from the start."
+		]
+	},
+	"a1-voice-body-turn": {
+		"text": "When you finish, the second brother's smile stops on his face and he turns to call for help. The senior sister stays. She takes the rope out of your hand: \"What you said in your head was uglier than what you said aloud.\"",
+		"choices": [
+			"(Inward) He truly wants me to succeed.",
+			"(Inward) This courtyard was stacked out of bricks from the start."
+		]
 	}
 }

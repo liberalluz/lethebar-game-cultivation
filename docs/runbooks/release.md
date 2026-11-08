@@ -20,13 +20,18 @@ before building, so the notes and the archive describe the same release:
 
 ```bash
 python infra/tool/release/release.py --root . --check
-python infra/tool/release/release.py --root . --write --version v1.0.0
+python infra/tool/release/release.py --root . --write --stream cultivation --version v1.0.0
 ```
+
+`--stream` names what the version counts, and it becomes the heading:
+`## cultivation v1.0.0` for the pack, `## repo v0.1.0` for the repository
+itself. A pack release and a repository release are separate lines; the pack
+line is the one that must agree with `manifest.json` and the tag.
 
 `--check` validates the pending fragments and fails when there are none — that
 is the normal state right after a release. `--write` removes only the fragments
-it consumed. The version passed here is the pack's version and must equal the
-one in `manifest.json` and the tag.
+it consumed. The pack's version passed here must equal the one in
+`manifest.json` and the tag.
 
 ## Build and check
 

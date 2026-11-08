@@ -54,7 +54,7 @@ id changed once, before any pack had been published.
 
 ```bash
 python infra/tool/release/release.py --root . --check
-python infra/tool/release/release.py --root . --write --version v1.0.0
+python infra/tool/release/release.py --root . --write --stream cultivation --version v1.0.0
 python infra/tool/release/pack.py build packs/cultivation --out dist
 python infra/checks/check_pack.py dist/cultivation.zip
 python infra/tool/release/pack.py hash dist/cultivation.zip
@@ -85,7 +85,7 @@ pull request it first checks that the branch's commits say why they exist.
 | Command | What it does |
 |---|---|
 | `python infra/tool/release/release.py --root . --check` | Validate the `changelog.d/` fragments without changing anything |
-| `python infra/tool/release/release.py --root . --write --version v1.0.0` | Fold the fragments into `CHANGELOG.md` and delete the consumed ones |
+| `python infra/tool/release/release.py --root . --write --stream cultivation --version v1.0.0` | Fold the fragments into `CHANGELOG.md` and delete the consumed ones |
 | `python infra/tool/release/pack.py build packs/cultivation --out dist` | Zip the pack into `dist/cultivation.zip` |
 | `python infra/checks/check_pack.py dist/cultivation.zip` | Check the archive against the pack envelope |
 | `python infra/tool/release/pack.py hash dist/cultivation.zip` | Write the `id-version.json` descriptor beside the archive |

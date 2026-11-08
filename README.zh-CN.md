@@ -38,7 +38,7 @@
 
 ```bash
 python infra/tool/release/release.py --root . --check
-python infra/tool/release/release.py --root . --write --version v1.0.0
+python infra/tool/release/release.py --root . --write --stream cultivation --version v1.0.0
 python infra/tool/release/pack.py build packs/cultivation --out dist
 python infra/checks/check_pack.py dist/cultivation.zip
 python infra/tool/release/pack.py hash dist/cultivation.zip
@@ -58,7 +58,7 @@ CI 跑的是同样三步：`.github/workflows/gate.yml` 用 `infra/` 里的 `pac
 | 命令 | 作用 |
 |---|---|
 | `python infra/tool/release/release.py --root . --check` | 校验 `changelog.d/` 的片段，不改任何东西 |
-| `python infra/tool/release/release.py --root . --write --version v1.0.0` | 把片段并进 `CHANGELOG.md` 并删掉已消费的片段 |
+| `python infra/tool/release/release.py --root . --write --stream cultivation --version v1.0.0` | 把片段并进 `CHANGELOG.md` 并删掉已消费的片段 |
 | `python infra/tool/release/pack.py build packs/cultivation --out dist` | 把包打成 `dist/cultivation.zip` |
 | `python infra/checks/check_pack.py dist/cultivation.zip` | 按包信封检查压缩包 |
 | `python infra/tool/release/pack.py hash dist/cultivation.zip` | 在压缩包旁写 `<id>-<version>.json` 描述文件 |

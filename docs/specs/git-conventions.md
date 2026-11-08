@@ -121,9 +121,13 @@ Scopes: pick exactly one from the closed list below.
   fragments into `CHANGELOG.md` and removes the ones it consumed. Batches never
   edit `CHANGELOG.md` by hand, and a release without a fragment is a release
   nobody can read.
+- `CHANGELOG.md` carries two streams, told apart by the heading: `## cultivation
+  vX.Y.Z` counts the pack, `## repo vX.Y.Z` counts everything that only touches
+  this repository. `release.py --stream` writes the heading; without it the
+  heading is the version alone.
 - The pack's version lives in `packs/<id>/manifest.json`.
-- Tag: `pack/<id>/vX.Y.Z`; the version in the tag and the version in the
-  manifest must match.
+- Tags: `pack/<id>/vX.Y.Z` for a pack release, `repo/vX.Y.Z` for a repository
+  release. The version in a pack tag and the version in the manifest must match.
 - The archive is named from the manifest id; the descriptor `<id>-<version>.json`
   travels beside it and both are uploaded to the release.
 - `dist/` is generated and git-ignored. A release is cut from a clean tree.

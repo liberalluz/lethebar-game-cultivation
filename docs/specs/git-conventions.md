@@ -141,3 +141,20 @@ Scopes: pick exactly one from the closed list below.
 - Run `git status` after any build or install. An untracked file is either a
   new source file to add or a generated file to ignore; it is never left
   unexplained.
+
+## 8. Workflows
+
+A workflow file can read the repository's secrets and run arbitrary commands,
+so GitHub guards it with a scope of its own. This repository answers by never
+giving a command-line token that scope.
+
+- `.github/workflows/` is edited in the GitHub web editor, not pushed from a
+  command line.
+- `gh auth status` shows `gist`, `read:org`, `repo` — and nothing else. A commit
+  that adds or changes a workflow file cannot be pushed with that token; that
+  refusal is the rule working, not a defect to work around.
+- After a web edit, pull the commit the editor created: `git fetch` then
+  `git merge --ff-only`. Never reset over it, and never re-create the file
+  locally to "keep the tree level".
+- The rest of §2 still applies: the editor's commit gets a subject in the same
+  shape, and a change that touches only the workflow is `ci(infra)`.

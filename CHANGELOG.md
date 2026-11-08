@@ -1,9 +1,16 @@
 # Changelog
 
 <!-- Released versions, newest first. The release tool owns this file.
-     Two streams: `## cultivation vX.Y.Z` is the pack (tag
-     `pack/cultivation/vX.Y.Z`); `## repo vX.Y.Z` is this repository itself
+     One stream per package, plus one for the repository: `## cultivation vX.Y.Z`
+     and `## cultivation-rogue vX.Y.Z` are packs (tags
+     `pack/<id>/vX.Y.Z`); `## repo vX.Y.Z` is this repository itself
      (tag `repo/vX.Y.Z`). -->
+
+## cultivation-rogue v0.2.0 - 2026-11-08
+
+### Added
+- The first act of `cultivation-rogue` is playable at `0.2.0`: three scenes, two lies, two builds and four endings.
+- `belief`, `qi`, `insight` and `turn` are ledger resources, so the numbers a scene leaves behind are visible in the same place the story is read.
 
 ## repo v0.1.0 - 2026-11-08
 

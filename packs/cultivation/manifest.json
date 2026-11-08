@@ -1,6 +1,6 @@
 {
   "id": "cultivation",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "specVersion": "2.0.0",
   "kind": "bundle",
   "requires": [],
@@ -25,6 +25,13 @@
   "entry": "x1",
   "saveSchema": 1,
   "assets": [],
+  "collection": {
+    "id": "cultivation",
+    "names": {
+      "zh-CN": "修仙",
+      "en": "Cultivation"
+    }
+  },
   "meta": {
     "pitch": {
       "en": "A climb through five realms, one choice at a time.",

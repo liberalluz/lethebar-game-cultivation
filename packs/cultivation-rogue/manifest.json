@@ -29,6 +29,13 @@
   "entry": "a1-s01",
   "saveSchema": 1,
   "assets": [],
+  "collection": {
+    "id": "cultivation",
+    "names": {
+      "zh-CN": "修仙",
+      "en": "Cultivation"
+    }
+  },
   "meta": {
     "pitch": {
       "zh-CN": "师尊说你天生剑骨，二师兄说你是金身。他们都靠你信。",

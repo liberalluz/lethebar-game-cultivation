@@ -87,13 +87,18 @@ Scopes: pick exactly one from the closed list below.
 
 ## 3. Pull requests
 
-- From B2 on, a change opens with a batch card in `process/batches/<id>.md` and
-  reaches `main` as a pull request; B1 and earlier landed directly and are not
-  retrofitted.
-- One PR = one batch = one behaviour that changed, and how it was verified.
-- Not one day of work, and not one commit.
-- Fill the PR template; no placeholders.
-- Link the issue or record if one exists.
+- From B2 on, a change walks one order: batch card in `process/batches/<id>.md`
+  → branch → commits (each with `Why:` and `Batch:`) → pull request → one
+  code-owner approval → squash merge → exit record in `records/live/`. B1 and
+  earlier landed directly and are not retrofitted.
+- One PR = one batch = one behaviour that changed, and how it was verified. Not
+  one day of work, and not one commit.
+- The PR body is `.github/PULL_REQUEST_TEMPLATE.md`, filled in: summary, impact,
+  verification with the lines that decide the outcome, risks and rollback,
+  self-check. An empty body, or a template still holding its comments, is a
+  blocking fault, not a shortcut — the reviewer has nothing to approve.
+- Link the batch card, the issue or the record this PR serves. A PR that cannot
+  name its batch is either paperwork (say so in the self-check) or out of order.
 - Reference another pull request as a written link. A bare `#<n>` is expanded
   by the renderer into that pull request's title; the written link
   (`[#<n>](https://github.com/<owner>/<repo>/pull/<n>)`) is the only form that
@@ -150,6 +155,21 @@ Scopes: pick exactly one from the closed list below.
 - `docs/` is English; a translation is `<name>.zh-CN.md` in the same directory.
 - Commit subjects and bodies are English, including the squashed commits on
   `main`.
+- The pull request template stays English. So does the body written from it:
+  `language.external` is `en-US`, and the body follows the batch card, which is
+  English.
+- A prepared body carries a translation for every `supported` locale other than
+  `external`; here that is `zh-CN`. `batch.py pr --prepare` writes both under
+  `.batch/<id>/`: `pr-body.md`, `pr-body.<locale>.md`, and
+  `pr-body.manifest.json` with the body's sha256. `.batch/` is local execution
+  state, never committed, and pasting the translation into the pull request is a
+  person's step, not the tool's.
+- The translate hook reads `LETHEBAR_TRANSLATION_FILE` first: point it at a
+  finished translation and no API key is needed. Without that variable the hook
+  falls back to the API and fails when neither is present.
+- `check_translation.py` turns the batch red when a prepared body has no
+  manifest, when the body changed after the last prepare, or when a listed
+  translation is missing or empty.
 
 ## 7. Generated files
 
@@ -169,15 +189,17 @@ so GitHub guards it with a scope of its own. This repository answers by never
 giving a command-line token that scope.
 
 - A commit that touches `.github/workflows/` goes over SSH, not with the `gh`
-  token: `git push git@github.com:liberalluz/<repository>.git main:main`. SSH
-  authenticates the person, so the OAuth restriction does not apply to it.
-- Ask the maintainer before that push. It is the one place where a workflow
-  change reaches `main` without a second person reading the diff.
+  token: `git push git@github.com:liberalluz/<repository>.git <branch>:<branch>`,
+  then a pull request. SSH authenticates the person, so the OAuth restriction
+  does not apply to it.
+- Since `main` is protected, that pull request takes the same one approval as
+  any other. A workflow change no longer reaches `main` without a second person
+  reading the diff; the SSH route only carries it to the branch.
 - Never `gh auth refresh -s workflow`. `gh auth status` shows `gist`,
   `read:org`, `repo` — and nothing else. A rejected HTTPS push of a workflow
   commit is the rule working, not a defect to work around.
-- Without an SSH key, fall back to the GitHub web editor, then `git fetch` and
-  `git merge --ff-only`. Never reset over the editor's commit, and never
-  re-create the file locally to "keep the tree level".
+- Without an SSH key, fall back to the GitHub web editor on the branch, then
+  `git fetch` and `git merge --ff-only`. Never reset over the editor's commit,
+  and never re-create the file locally to "keep the tree level".
 - The rest of §2 still applies: the subject keeps its shape, and a change that
   touches only the workflow is `ci(infra)`.

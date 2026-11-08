@@ -19,7 +19,7 @@ batch card -> branch -> commit -> PR -> one approval -> squash merge
 - `main` is protected: one approving review from a code owner, linear history.
 - Do not push to `main`.
 - Keep a branch short-lived.
-- Fill the PR template; no placeholders.
+- Fill the PR template; no placeholders. An empty body, or one still carrying the template comments, is sent back.
 - Required checks must pass before merge.
 
 ## Review

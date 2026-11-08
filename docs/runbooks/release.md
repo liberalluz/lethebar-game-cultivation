@@ -13,6 +13,21 @@ describe different bytes than the ones that ship.
   scope. The token must not carry the workflow scope — workflow files are
   edited in the web editor, see §8 of the git conventions.
 
+## Compose the changelog
+
+Fragments live in `changelog.d/`, one per change. Fold them into `CHANGELOG.md`
+before building, so the notes and the archive describe the same release:
+
+```bash
+python infra/tool/release/release.py --root . --check
+python infra/tool/release/release.py --root . --write --version v1.0.0
+```
+
+`--check` validates the pending fragments and fails when there are none — that
+is the normal state right after a release. `--write` removes only the fragments
+it consumed. The version passed here is the pack's version and must equal the
+one in `manifest.json` and the tag.
+
 ## Build and check
 
 ```bash

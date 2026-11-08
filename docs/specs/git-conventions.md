@@ -114,6 +114,10 @@ Scopes: pick exactly one from the closed list below.
 
 ## 5. Release
 
+- A change adds one fragment under `changelog.d/`; `release.py --write` folds the
+  fragments into `CHANGELOG.md` and removes the ones it consumed. Batches never
+  edit `CHANGELOG.md` by hand, and a release without a fragment is a release
+  nobody can read.
 - The pack's version lives in `packs/<id>/manifest.json`.
 - Tag: `pack/<id>/vX.Y.Z`; the version in the tag and the version in the
   manifest must match.

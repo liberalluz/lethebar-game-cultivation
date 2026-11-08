@@ -53,6 +53,8 @@ id changed once, before any pack had been published.
 ## Build and publish
 
 ```bash
+python infra/tool/release/release.py --root . --check
+python infra/tool/release/release.py --root . --write --version v1.0.0
 python infra/tool/release/pack.py build packs/cultivation --out dist
 python infra/checks/check_pack.py dist/cultivation.zip
 python infra/tool/release/pack.py hash dist/cultivation.zip
@@ -61,7 +63,9 @@ python infra/tool/release/pack.py publish dist/cultivation.zip \
   --tag pack/cultivation/v1.0.0 --apply
 ```
 
-`build` names the archive from the manifest id, so the directory name and the
+`release.py` folds the `changelog.d/` fragments into `CHANGELOG.md` and deletes
+only the fragments it consumed; run it first, so the notes and the archive
+describe the same release. `build` names the archive from the manifest id, so the directory name and the
 id can never disagree. `check_pack` reads the archive, not the source tree: the
 root may hold only `manifest.json`, and everything else lives under `data/`,
 `assets/` or `i18n/`. `hash` writes the descriptor that travels beside the
@@ -79,6 +83,8 @@ and the repository move together. On a `pack/*` tag it also publishes.
 
 | Command | What it does |
 |---|---|
+| `python infra/tool/release/release.py --root . --check` | Validate the `changelog.d/` fragments without changing anything |
+| `python infra/tool/release/release.py --root . --write --version v1.0.0` | Fold the fragments into `CHANGELOG.md` and delete the consumed ones |
 | `python infra/tool/release/pack.py build packs/cultivation --out dist` | Zip the pack into `dist/cultivation.zip` |
 | `python infra/checks/check_pack.py dist/cultivation.zip` | Check the archive against the pack envelope |
 | `python infra/tool/release/pack.py hash dist/cultivation.zip` | Write the `id-version.json` descriptor beside the archive |
@@ -98,7 +104,7 @@ writable repository and nothing else.
 |---|---|
 | `packs/cultivation/` | The pack: `manifest.json`, `data/nodes.json`, `data/mechanics.json`, `data/i18n/en.json` |
 | `infra/checks/` | The pack envelope check, the author-gate check, the commit-body check |
-| `infra/tool/release/` | `pack.py`: build, hash, publish |
+| `infra/tool/release/` | `pack.py`: build, hash, publish; `release.py`: compose the changelog |
 | `infra/tool/merge/` | `pr_merge.py`: build and verify the squash-merge message |
 | `infra/tool/batch/`, `infra/tool/repo/` | Vendored Nebula batch and repository tooling |
 | `docs/` | Specs, decisions, intent, runbooks ([docs/README.md](docs/README.md)) |

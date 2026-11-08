@@ -37,6 +37,8 @@
 ## 构建与发布
 
 ```bash
+python infra/tool/release/release.py --root . --check
+python infra/tool/release/release.py --root . --write --version v1.0.0
 python infra/tool/release/pack.py build packs/cultivation --out dist
 python infra/checks/check_pack.py dist/cultivation.zip
 python infra/tool/release/pack.py hash dist/cultivation.zip
@@ -45,7 +47,7 @@ python infra/tool/release/pack.py publish dist/cultivation.zip \
   --tag pack/cultivation/v1.0.0 --apply
 ```
 
-`build` 用 manifest 的 id 命名压缩包，所以目录名和 id 不可能对不上。`check_pack` 读的是压缩包本身而不是源码树：根上只许有 `manifest.json`，其余都必须落在 `data/`、`assets/` 或 `i18n/` 下。`hash` 写出随包一起上传的描述文件。`dist/` 不进 git，永远不提交。
+`release.py` 把 `changelog.d/` 里的片段并进 `CHANGELOG.md`，只删掉它消费过的那几个；先跑它，发布说明和压缩包才描述同一次发布。`build` 用 manifest 的 id 命名压缩包，所以目录名和 id 不可能对不上。`check_pack` 读的是压缩包本身而不是源码树：根上只许有 `manifest.json`，其余都必须落在 `data/`、`assets/` 或 `i18n/` 下。`hash` 写出随包一起上传的描述文件。`dist/` 不进 git，永远不提交。
 
 标签形状是 `pack/<id>/v<version>`；包里的版本和标签里的版本必须一致。发布需要 `gh` 已认证且对本仓有写权限。
 
@@ -55,6 +57,8 @@ CI 跑的是同样三步：`.github/workflows/gate.yml` 用 `infra/` 里的 `pac
 
 | 命令 | 作用 |
 |---|---|
+| `python infra/tool/release/release.py --root . --check` | 校验 `changelog.d/` 的片段，不改任何东西 |
+| `python infra/tool/release/release.py --root . --write --version v1.0.0` | 把片段并进 `CHANGELOG.md` 并删掉已消费的片段 |
 | `python infra/tool/release/pack.py build packs/cultivation --out dist` | 把包打成 `dist/cultivation.zip` |
 | `python infra/checks/check_pack.py dist/cultivation.zip` | 按包信封检查压缩包 |
 | `python infra/tool/release/pack.py hash dist/cultivation.zip` | 在压缩包旁写 `<id>-<version>.json` 描述文件 |
@@ -73,7 +77,7 @@ CI 跑的是同样三步：`.github/workflows/gate.yml` 用 `infra/` 里的 `pac
 |---|---|
 | `packs/cultivation/` | 包本身：`manifest.json`、`data/nodes.json`、`data/mechanics.json`、`data/i18n/en.json` |
 | `infra/checks/` | 包信封检查、CI 模板检查、提交信息检查 |
-| `infra/tool/release/` | `pack.py`：build、hash、publish |
+| `infra/tool/release/` | `pack.py`：build、hash、publish；`release.py`：合并 changelog |
 | `infra/tool/merge/` | `pr_merge.py`：生成并校验 squash 合并信息 |
 | `infra/tool/batch/`、`infra/tool/repo/` | 随仓携带的 Nebula 批次与仓库工具 |
 | `docs/` | 规格、决策、意图、操作手册（见 [docs/README.md](docs/README.md)） |

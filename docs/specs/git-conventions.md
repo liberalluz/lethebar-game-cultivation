@@ -169,15 +169,17 @@ so GitHub guards it with a scope of its own. This repository answers by never
 giving a command-line token that scope.
 
 - A commit that touches `.github/workflows/` goes over SSH, not with the `gh`
-  token: `git push git@github.com:liberalluz/<repository>.git main:main`. SSH
-  authenticates the person, so the OAuth restriction does not apply to it.
-- Ask the maintainer before that push. It is the one place where a workflow
-  change reaches `main` without a second person reading the diff.
+  token: `git push git@github.com:liberalluz/<repository>.git <branch>:<branch>`,
+  then a pull request. SSH authenticates the person, so the OAuth restriction
+  does not apply to it.
+- Since `main` is protected, that pull request takes the same one approval as
+  any other. A workflow change no longer reaches `main` without a second person
+  reading the diff; the SSH route only carries it to the branch.
 - Never `gh auth refresh -s workflow`. `gh auth status` shows `gist`,
   `read:org`, `repo` — and nothing else. A rejected HTTPS push of a workflow
   commit is the rule working, not a defect to work around.
-- Without an SSH key, fall back to the GitHub web editor, then `git fetch` and
-  `git merge --ff-only`. Never reset over the editor's commit, and never
-  re-create the file locally to "keep the tree level".
+- Without an SSH key, fall back to the GitHub web editor on the branch, then
+  `git fetch` and `git merge --ff-only`. Never reset over the editor's commit,
+  and never re-create the file locally to "keep the tree level".
 - The rest of §2 still applies: the subject keeps its shape, and a change that
   touches only the workflow is `ci(infra)`.

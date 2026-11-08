@@ -63,8 +63,8 @@ engine's.
   `pack.py` `56ed4758` → `7c67e478`, `check_pack.py` `dfa6c590` → `66a9dfd3`.
   The blob comparison that proved the copy was faithful no longer holds for
   them.
-- CI is unaffected. `.github/workflows/gate.yml` runs the engine's own copies
-  from the pinned `ENGINE_REF`, not the ones in this repository, on Linux.
+- CI runs the copies in this repository, so the gate exercises the changed
+  fixtures rather than the engine's originals.
 - The same defect exists upstream; it was reported to the engine repository.
   When the engine ships the fix, re-copy these two files and delete this
   decision — the byte-for-byte property comes back.

@@ -71,11 +71,9 @@ The tag shape is `pack/<id>/v<version>`; the version inside the archive and the
 version in the tag must match. Publishing needs `gh` authenticated with write
 access to this repository.
 
-CI runs the same three steps. `.github/workflows/gate.yml` checks out the engine
-at a pinned commit and uses the engine's copies of `pack.py` and `check_pack.py`,
-so an archive that passes here is one the engine accepts. On a `pack/*` tag it
-also publishes. The pinned ref is a commit until the engine tags `v0.6.0`, then
-it becomes the tag.
+CI runs the same three steps. `.github/workflows/gate.yml` builds and checks with
+the copies of `pack.py` and `check_pack.py` that live in `infra/`, so the gate
+and the repository move together. On a `pack/*` tag it also publishes.
 
 ## Commands
 

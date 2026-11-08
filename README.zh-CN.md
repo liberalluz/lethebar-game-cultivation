@@ -49,7 +49,7 @@ python infra/tool/release/pack.py publish dist/cultivation.zip \
 
 标签形状是 `pack/<id>/v<version>`；包里的版本和标签里的版本必须一致。发布需要 `gh` 已认证且对本仓有写权限。
 
-CI 跑的是同样三步：`.github/workflows/gate.yml` 按钉住的提交检出引擎，用引擎那份 `pack.py` 与 `check_pack.py`；在这里过的压缩包，到了引擎那里也过。打 `pack/*` 标签时它还会发布。钉住的 ref 在引擎发布 `v0.6.0` 之前是一个提交号，之后改成那个标签。
+CI 跑的是同样三步：`.github/workflows/gate.yml` 用 `infra/` 里的 `pack.py` 与 `check_pack.py` 构建和检查，工具跟着这个仓一起走。打 `pack/*` 标签时它还会发布。
 
 ## 命令
 

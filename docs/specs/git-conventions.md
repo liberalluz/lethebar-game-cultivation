@@ -155,6 +155,21 @@ Scopes: pick exactly one from the closed list below.
 - `docs/` is English; a translation is `<name>.zh-CN.md` in the same directory.
 - Commit subjects and bodies are English, including the squashed commits on
   `main`.
+- The pull request template stays English. So does the body written from it:
+  `language.external` is `en-US`, and the body follows the batch card, which is
+  English.
+- A prepared body carries a translation for every `supported` locale other than
+  `external`; here that is `zh-CN`. `batch.py pr --prepare` writes both under
+  `.batch/<id>/`: `pr-body.md`, `pr-body.<locale>.md`, and
+  `pr-body.manifest.json` with the body's sha256. `.batch/` is local execution
+  state, never committed, and pasting the translation into the pull request is a
+  person's step, not the tool's.
+- The translate hook reads `LETHEBAR_TRANSLATION_FILE` first: point it at a
+  finished translation and no API key is needed. Without that variable the hook
+  falls back to the API and fails when neither is present.
+- `check_translation.py` turns the batch red when a prepared body has no
+  manifest, when the body changed after the last prepare, or when a listed
+  translation is missing or empty.
 
 ## 7. Generated files
 

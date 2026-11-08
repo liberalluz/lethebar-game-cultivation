@@ -37,6 +37,9 @@ Scopes: pick exactly one from the closed list below.
   `docs(docs): add the save-compatibility note`.
 - The scope follows what the change is about, not where the file sits:
   `git-conventions.md` lives in `docs/` but its changes are `repo`.
+- Vendored tooling splits by who runs it: what the gate runs is `infra`
+  (`infra/tool/release/`), what a person runs is `tools` (`batch`, `repo`,
+  `merge`).
 - Adding a scope means editing this table first, in the same pull request as
   its first use.
 - Five scopes cover everything in the repository today: `packs/cultivation/`

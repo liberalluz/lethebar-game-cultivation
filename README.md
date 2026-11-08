@@ -77,7 +77,8 @@ access to this repository.
 
 CI runs the same three steps. `.github/workflows/gate.yml` builds and checks with
 the copies of `pack.py` and `check_pack.py` that live in `infra/`, so the gate
-and the repository move together. On a `pack/*` tag it also publishes.
+and the repository move together. On a `pack/*` tag it also publishes, and on a
+pull request it first checks that the branch's commits say why they exist.
 
 ## Commands
 

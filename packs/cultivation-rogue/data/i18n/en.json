@@ -1,0 +1,12 @@
+{
+	"a1-s01": {
+		"text": "You wake in the firewood shed of the Xuanshan Sect. Three hundred years pass like a dream that never quite lifted, and the snow outside falls without a sound. Someone is calling your name, and the word they use is 'master' — you do not remember taking a disciple.",
+		"choices": [
+			"Push the door open"
+		]
+	},
+	"a1-s02": {
+		"text": "Nine of them stand outside, each with a breath like a deep well. The first kneels into the snow, looks up, and says: master, the ten thousand clans are here again. Your own voice comes out level. You ask him: which clan, this time.",
+		"choices": []
+	}
+}

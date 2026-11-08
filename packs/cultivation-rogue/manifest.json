@@ -1,0 +1,37 @@
+{
+  "id": "cultivation-rogue",
+  "version": "0.1.0",
+  "specVersion": "2.0.0",
+  "kind": "bundle",
+  "engine": ">=4.7.0 <5.0.0",
+  "name": "修仙·派遣",
+  "names": {
+    "zh-CN": "修仙·派遣",
+    "en": "Cultivation: Dispatch"
+  },
+  "defaultLocale": "zh-CN",
+  "locales": [
+    "en"
+  ],
+  "protocol": "linear@1",
+  "capabilities": [
+    "narrative@1",
+    "text@1",
+    "locale@1",
+    "save@2"
+  ],
+  "mechanics": [
+    "progress"
+  ],
+  "entry": "a1-s01",
+  "saveSchema": 1,
+  "assets": [],
+  "meta": {
+    "pitch": {
+      "en": "Wake up as the master of nine disciples who no longer need you.",
+      "zh-CN": "醒来时你已是师尊，九个徒弟早已不需要你。"
+    },
+    "audience": "teens",
+    "minutes": 10
+  }
+}

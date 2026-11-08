@@ -65,6 +65,10 @@ Scopes: pick exactly one from the closed list below.
 - Batch numbers belong to this repository. They start at `B1` and do not
   continue the engine's numbering; a message never cites an engine batch, an
   engine issue number or an engine commit.
+- A batch number is assigned by `batch.py plan`, when the card exists. A
+  roadmap or a plan never numbers a batch that has not been planned: it writes
+  `next` for the one being written now and `not registered` after that, so an
+  inserted batch moves one cell instead of a column of numbers.
 - Until the split from the engine is finished, commits go straight to `main`
   and no pull request is opened. The pull request flow in §3 and §4 starts
   with the second reviewer.

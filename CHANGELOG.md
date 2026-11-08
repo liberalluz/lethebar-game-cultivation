@@ -6,6 +6,19 @@
      `pack/<id>/vX.Y.Z`); `## repo vX.Y.Z` is this repository itself
      (tag `repo/vX.Y.Z`). -->
 
+## cultivation v1.0.1 - 2026-11-08
+
+### Added
+- Both packs now name the same collection, so the pack page draws one world row with two ways to play instead of two rows in the fallback group.
+
+### Changed
+- `cultivation` is `1.0.1`. The story, the id and `saveSchema` are unchanged; only the manifest gained the collection block.
+
+## cultivation-rogue v0.3.0 - 2026-11-08
+
+### Added
+- The first act has an inner voice: the same spoken line, held two ways, draws two different replies from the one character who can hear it.
+
 ## cultivation-rogue v0.2.0 - 2026-11-08
 
 ### Added

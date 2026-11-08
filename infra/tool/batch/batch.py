@@ -36,7 +36,13 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "branch_prefix": "batch/",
     "docs_root": "",
     "scope": {"ignore": [], "generated": []},
+    "commit": {
+        "types": [],
+        "scopes": [],
+        "body": [],
+    },
     "checks": [],
+    "release_checks": [],
     "pr_create": [],
     "translate": [],
     "merge": [],
@@ -46,7 +52,14 @@ DATED_ID_RE = re.compile(r"^[0-9]{8}-[0-9a-f]{6}$")
 CARD_ID_RE = re.compile(r"^B[0-9]+[a-z]?$")
 CARD_MARKER_RE = re.compile(r"<!--\s*batch-card\s*:\s*v1\s*-->")
 CARD_JSON_RE = re.compile(r"```json[ \t]*\r?\n(.*?)\r?\n```", re.DOTALL)
+PLAN_MARKER_RE = re.compile(
+    r"<!--\s*planned\s*:\s*(?P<id>[A-Za-z0-9-]+)\s+(?P<hash>[0-9a-f]{8,64})\s+(?P<day>\d{4}-\d{2}-\d{2})\s*-->"
+)
 CARD_TYPES = {"feat", "fix", "process", "docs"}
+COMMIT_TYPES = ("feat", "fix", "docs", "test", "refactor", "chore", "ci")
+COMMIT_SUBJECT_RE = re.compile(
+    r"^(?P<type>[a-z]+)(?:\((?P<scope>[^)]+)\))?: (?P<subject>.+)$"
+)
 DOCS_PROCESS = "process"
 DOCS_SDP = "sdp.md"
 DOCS_BATCHES = "batches"
@@ -150,6 +163,7 @@ def config_path(root: Path) -> Path:
 def load_config(root: Path) -> dict[str, Any]:
     config = dict(DEFAULT_CONFIG)
     config["scope"] = dict(DEFAULT_CONFIG["scope"])
+    config["commit"] = dict(DEFAULT_CONFIG["commit"])
     raw = load_json(config_path(root))
     if raw is not None:
         for key in DEFAULT_CONFIG:
@@ -166,11 +180,45 @@ def load_config(root: Path) -> dict[str, Any]:
         config["scope"][key] = [str(item) for item in value]
     if not isinstance(config.get("checks"), list):
         raise SystemExit("config.checks must be a list")
+    if not isinstance(config.get("release_checks"), list):
+        raise SystemExit("config.release_checks must be a list")
+    commit = config.get("commit")
+    if not isinstance(commit, dict):
+        raise SystemExit("config.commit must be an object")
+    for key in ("types", "scopes", "body"):
+        value = commit.get(key, [])
+        if not isinstance(value, list):
+            raise SystemExit(f"config.commit.{key} must be a list")
     for key in ("pr_create", "translate", "merge"):
         value = config.get(key)
         if value and not isinstance(value, list):
             raise SystemExit(f"config.{key} must be a command array")
     return config
+
+
+def scaffold_git(root: Path) -> dict[str, Any]:
+    """Read the optional ``git`` preset written by bootstrap."""
+    data = load_json(root / SCAFFOLD_REL) or {}
+    block = data.get("git")
+    return block if isinstance(block, dict) else {}
+
+
+def commit_rule(root: Path, config: dict[str, Any]) -> dict[str, Any]:
+    """Merge ``config.commit`` over the scaffold preset.
+
+    An empty rule means "not configured": nothing is checked.
+    """
+    preset = scaffold_git(root)
+    own = config.get("commit") or {}
+    types = [str(item) for item in (own.get("types") or preset.get("types") or [])]
+    scopes = [str(item) for item in (own.get("scopes") or preset.get("scopes") or [])]
+    body = [str(item) for item in (own.get("body") or preset.get("body") or [])]
+    return {
+        "types": types,
+        "scopes": scopes,
+        "body": body,
+        "enabled": bool(types or scopes or body),
+    }
 
 
 def state_root(root: Path) -> Path:
@@ -324,8 +372,51 @@ def source_relative(root: Path, path: Path) -> str:
     return Path(os.path.relpath(path, root)).as_posix()
 
 
+def inside_project(root: Path, path: Path) -> bool:
+    try:
+        path.resolve().relative_to(root.resolve())
+        return True
+    except ValueError:
+        return False
+
+
 def file_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def source_card_hash(path: Path) -> str:
+    """Hash a card source, ignoring the ``planned`` marker line."""
+    text = path.read_text(encoding="utf-8", errors="replace")
+    clean = PLAN_MARKER_RE.sub("", text).rstrip()
+    return hashlib.sha256(clean.encode("utf-8")).hexdigest()
+
+
+def source_hashes(path: Path) -> set[str]:
+    raw = path.read_bytes()
+    text = path.read_text(encoding="utf-8", errors="replace")
+    clean = PLAN_MARKER_RE.sub("", text).rstrip()
+    return {
+        hashlib.sha256(raw).hexdigest(),
+        hashlib.sha256(clean.encode("utf-8")).hexdigest(),
+    }
+
+
+def plan_marker_hash(path: Path, batch_id: str) -> str | None:
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (FileNotFoundError, UnicodeDecodeError):
+        return None
+    for match in PLAN_MARKER_RE.finditer(text):
+        if match.group("id") == batch_id:
+            return match.group("hash")
+    return None
+
+
+def write_plan_marker(path: Path, batch_id: str, digest: str, day: str) -> None:
+    text = path.read_text(encoding="utf-8")
+    text = PLAN_MARKER_RE.sub("", text).rstrip() + "\n"
+    text += f"<!-- planned: {batch_id} {digest[:8]} {day} -->\n"
+    path.write_text(text, encoding="utf-8", newline="\n")
 
 
 def card_source_path(root: Path, card: dict[str, Any]) -> Path | None:
@@ -344,12 +435,14 @@ def source_is_current(root: Path, card: dict[str, Any]) -> tuple[bool, str]:
     if not path.is_file():
         return False, f"card source is missing: {card.get('source')}"
     expected = str(card.get("source_sha256", ""))
-    if file_sha256(path) != expected:
+    if expected not in source_hashes(path):
         return False, "card source changed; re-plan and re-approve"
     return True, ""
 
 
-def validate_planned_card(card: dict[str, Any], path: Path | None = None) -> None:
+def validate_planned_card(
+    card: dict[str, Any], path: Path | None = None, types: set[str] | None = None
+) -> None:
     def fail(message: str) -> None:
         raise ValueError(message)
 
@@ -380,8 +473,9 @@ def validate_planned_card(card: dict[str, Any], path: Path | None = None) -> Non
 
     if not isinstance(card.get("goal"), str) or not card["goal"].strip():
         fail("goal must be a non-empty string")
-    if card.get("type") not in CARD_TYPES:
-        fail("type must be feat, fix, process, or docs")
+    allowed = types or CARD_TYPES
+    if card.get("type") not in allowed:
+        fail(f"type must be one of: {', '.join(sorted(allowed))}")
     base = card.get("base")
     if not isinstance(base, str) or not base.strip() or any(ch.isspace() for ch in base):
         fail("base must be a non-empty branch name")
@@ -389,6 +483,8 @@ def validate_planned_card(card: dict[str, Any], path: Path | None = None) -> Non
     budget = card.get("size_budget")
     if type(budget) is not int or budget < 1:
         fail("size_budget must be an integer greater than zero")
+    if "release" in card and not isinstance(card["release"], bool):
+        fail("release must be a boolean")
 
     for key, allow_empty in (("allowed", False), ("forbidden", True)):
         if key not in card and key == "forbidden":
@@ -427,7 +523,9 @@ def validate_planned_card(card: dict[str, Any], path: Path | None = None) -> Non
             fail(f"skill {skill_id}: reason must be a string")
 
 
-def read_planned_card(path: Path) -> tuple[dict[str, Any], bytes]:
+def read_planned_card(
+    path: Path, types: set[str] | None = None
+) -> tuple[dict[str, Any], bytes]:
     data = path.read_bytes()
     try:
         text = data.decode("utf-8")
@@ -443,7 +541,7 @@ def read_planned_card(path: Path) -> tuple[dict[str, Any], bytes]:
         card = json.loads(block.group(1))
     except json.JSONDecodeError as exc:
         raise ValueError(f"invalid card JSON: {exc}") from exc
-    validate_planned_card(card, path)
+    validate_planned_card(card, path, types)
     return card, data
 
 
@@ -784,6 +882,88 @@ def check_budget(
     return added, deleted, binary, None
 
 
+def commit_subjects(root: Path, anchor: str) -> list[tuple[str, str, str]]:
+    """Return (short sha, subject, body) for the commits this branch adds."""
+    code, out, _ = run_git(
+        root,
+        ["log", "--no-merges", "--format=%h%x1f%s%x1f%b%x1e", f"{anchor}..HEAD"],
+    )
+    if code != 0:
+        return []
+    rows = []
+    for record in out.split("\x1e"):
+        line = record.strip("\n")
+        if not line:
+            continue
+        sha, _, rest = line.partition("\x1f")
+        subject, _, body = rest.partition("\x1f")
+        if sha:
+            rows.append((sha, subject, body))
+    return rows
+
+
+def subject_problems(
+    rule: dict[str, Any], sha: str, subject: str, body: str
+) -> list[str]:
+    """Return every complaint about one commit message."""
+    problems: list[str] = []
+    match = COMMIT_SUBJECT_RE.match(subject)
+    if not match:
+        return [f"{sha}: subject must read type(scope): subject: {subject}"]
+    kind = match.group("type")
+    scope = match.group("scope")
+    if rule["types"] and kind not in rule["types"]:
+        problems.append(
+            f"{sha}: type '{kind}' is not one of: {', '.join(rule['types'])}"
+        )
+    if rule["scopes"] and not scope:
+        problems.append(
+            f"{sha}: missing scope; choose one of: {', '.join(rule['scopes'])}"
+        )
+    if scope and rule["scopes"] and scope not in rule["scopes"]:
+        problems.append(
+            f"{sha}: scope '{scope}' is not one of: {', '.join(rule['scopes'])}"
+        )
+    missing = [token for token in rule["body"] if token not in body]
+    if missing:
+        problems.append(
+            f"{sha}: commit body must contain {', '.join(missing)} "
+            f"(write 'Batch: none' when there is no batch)"
+        )
+    return problems
+
+
+def check_commit_titles(
+    root: Path, anchor: str, config: dict[str, Any]
+) -> list[str]:
+    """Check every commit the branch adds against the configured rule."""
+    rule = commit_rule(root, config)
+    if not rule["enabled"]:
+        return []
+    problems: list[str] = []
+    for sha, subject, body in commit_subjects(root, anchor):
+        problems.extend(subject_problems(rule, sha, subject, body))
+    return problems
+
+
+def check_merged_commit(root: Path, config: dict[str, Any]) -> list[str]:
+    """Check the squash commit that just landed on the base branch.
+
+    This runs after the merge, so it can only report; it never blocks.
+    """
+    rule = commit_rule(root, config)
+    if not rule["enabled"]:
+        return []
+    code, out, _ = run_git(
+        root, ["log", "-1", "--format=%h%x1f%s%x1f%b"]
+    )
+    if code != 0 or not out.strip():
+        return []
+    sha, _, rest = out.partition("\x1f")
+    subject, _, body = rest.partition("\x1f")
+    return subject_problems(rule, sha, subject, body)
+
+
 def check_changelog(
     root: Path, card: dict[str, Any], changed: Sequence[str]
 ) -> tuple[list[str], list[str]]:
@@ -863,10 +1043,10 @@ def run_hook(
 
 
 def run_checks(
-    root: Path, batch_id: str, config: dict[str, Any]
+    root: Path, batch_id: str, checks: list[Any]
 ) -> dict[str, dict[str, Any]]:
     results: dict[str, dict[str, Any]] = {}
-    for item in config.get("checks", []):
+    for item in checks:
         if not isinstance(item, dict):
             raise SystemExit("each check must be an object")
         name = str(item.get("name", "")).strip()
@@ -959,8 +1139,12 @@ def cmd_plan(args: argparse.Namespace) -> int:
         if not source.is_file():
             print(f"card source not found: {source}", file=sys.stderr)
             return 2
+        config = load_config(root)
+        rule = commit_rule(root, config)
         try:
-            card, raw = read_planned_card(source)
+            card, raw = read_planned_card(
+                source, set(rule["types"]) if rule["types"] else None
+            )
         except ValueError as exc:
             print(f"invalid card: {exc}", file=sys.stderr)
             return 2
@@ -969,10 +1153,20 @@ def cmd_plan(args: argparse.Namespace) -> int:
             print(f"--id {args.id} does not match card id {batch_id}", file=sys.stderr)
             return 2
         target = batch_dir(root, batch_id)
-        if target.exists() and not archive_aborted(root, batch_id):
-            print(f"batch already exists: {batch_id}", file=sys.stderr)
-            return 1
-        config = load_config(root)
+        refresh = target.exists() and not archive_aborted(root, batch_id)
+        if refresh:
+            previous = load_json(target / "card.json")
+            if previous is not None and previous.get("legacy"):
+                print(f"batch already exists: {batch_id}", file=sys.stderr)
+                return 1
+            state = load_json(target / "state.json")
+            if state is not None and state.get("status") not in {"planned", "approved"}:
+                print(
+                    f"batch already started: {batch_id} "
+                    f"({state.get('status')}); abort it or use a new id",
+                    file=sys.stderr,
+                )
+                return 1
         docs_root = configured_docs_root(root, config) or docs_root_from_card(source)
         if docs_root is None:
             print(
@@ -1007,10 +1201,32 @@ def cmd_plan(args: argparse.Namespace) -> int:
                 return 1
         snapshot = dict(card)
         snapshot["source"] = source_relative(root, source)
-        snapshot["source_sha256"] = hashlib.sha256(raw).hexdigest()
+        snapshot["source_sha256"] = source_card_hash(source)
+        digest = card_hash(snapshot)
+        if refresh:
+            previous = load_json(target / "card.json") or {}
+            changed = [
+                key
+                for key in sorted(set(previous) | set(snapshot))
+                if key not in {"source", "source_sha256"}
+                and previous.get(key) != snapshot.get(key)
+            ]
+            if not changed and previous.get("source_sha256") == snapshot["source_sha256"]:
+                write_plan_marker(source, batch_id, digest, utc_now()[:10])
+                print(f"unchanged {batch_id}")
+                print(f"hash: {digest[:8]}")
+                return 0
+            write_json(target / "card.json", snapshot)
+            (target / "approval.json").unlink(missing_ok=True)
+            print(f"updated {batch_id}: {', '.join(changed) or 'card source only'}")
+            print("approval cleared; run: batch.py approve " + batch_id)
+            print(f"hash: {digest[:8]}")
+            write_plan_marker(source, batch_id, digest, utc_now()[:10])
+            return 0
         write_json(target / "card.json", snapshot)
+        write_plan_marker(source, batch_id, digest, utc_now()[:10])
         print(f"planned {batch_id} from {snapshot['source']}")
-        print(f"hash: {card_hash(snapshot)[:8]}")
+        print(f"hash: {digest[:8]}")
         return 0
 
     if not args.goal:
@@ -1192,7 +1408,20 @@ def cmd_check(args: argparse.Namespace) -> int:
         append_evidence(root, batch_id, f"source: FAIL ({message})")
         print(message, file=sys.stderr)
         return 1
+    source_path = card_source_path(root, card)
+    if source_path is not None and source_path.is_file():
+        marker = plan_marker_hash(source_path, batch_id)
+        if marker and not card_hash(card).startswith(marker):
+            print(
+                f"[warn] card marker {marker} does not match the planned hash "
+                f"{card_hash(card)[:8]}; re-plan",
+                file=sys.stderr,
+            )
     config = load_config(root)
+    release = bool(card.get("release")) or bool(getattr(args, "release", False))
+    checks = list(config.get("checks", []))
+    if release:
+        checks += list(config.get("release_checks", []))
     conflict = duplicate_id_error(root, card, config, batch_id)
     if conflict:
         state["status"] = "check_failed"
@@ -1223,11 +1452,13 @@ def cmd_check(args: argparse.Namespace) -> int:
     evidence_errors, evidence_warnings, skill_records = check_skill_evidence(
         root, batch_id, card
     )
+    commit_errors = check_commit_titles(root, anchor, config)
     gate_errors = [
         *violations,
         *changelog_errors,
         *skill_errors,
         *evidence_errors,
+        *commit_errors,
     ]
     if budget_error:
         gate_errors.append(budget_error)
@@ -1249,6 +1480,19 @@ def cmd_check(args: argparse.Namespace) -> int:
         append_evidence(root, batch_id, violation)
     for violation in evidence_errors:
         append_evidence(root, batch_id, violation)
+    for violation in commit_errors:
+        append_evidence(root, batch_id, f"commit: {violation}")
+    append_evidence(
+        root,
+        batch_id,
+        "commit titles: "
+        + ("PASS" if not commit_errors else f"FAIL ({len(commit_errors)})"),
+    )
+    append_evidence(
+        root,
+        batch_id,
+        f"release: {'yes' if release else 'no'} ({len(checks)} checks)",
+    )
     for warning in evidence_warnings:
         append_evidence(root, batch_id, f"warn: {warning}")
     if budget_error:
@@ -1258,12 +1502,13 @@ def cmd_check(args: argparse.Namespace) -> int:
     for warning in [*changelog_warnings, *evidence_warnings]:
         print(f"[warn] {warning}", file=sys.stderr)
 
-    results = run_checks(root, batch_id, config) if not gate_errors else {}
+    results = run_checks(root, batch_id, checks) if not gate_errors else {}
     passed = not gate_errors and all(
         item.get("status") == "pass" for item in results.values()
     )
     state["status"] = "checked" if passed else "check_failed"
     state["checks"] = results
+    state["release"] = release
     state["scope"] = {
         "budget": int(card.get("size_budget", 0)),
         "changed": len(changed),
@@ -1272,6 +1517,7 @@ def cmd_check(args: argparse.Namespace) -> int:
         "binary": binary,
         "measured_from": anchor,
         "result": "pass" if not budget_error and not violations else "fail",
+        "violations": violations,
     }
     state["changelog"] = {
         "declared": [str(item) for item in card.get("changelog", [])],
@@ -1287,6 +1533,7 @@ def cmd_check(args: argparse.Namespace) -> int:
         f" ({added + deleted} lines from {anchor[:12]})"
     )
     print(f"changelog: {'FAIL' if changelog_errors else 'PASS'}")
+    print(f"release: {'yes' if release else 'no'} ({len(checks)} checks)")
     print(
         f"skills: {'FAIL' if skill_errors or evidence_errors else 'PASS'}"
         + (
@@ -1305,19 +1552,23 @@ def cmd_check(args: argparse.Namespace) -> int:
 
 
 def pr_body(root: Path, batch_id: str) -> str:
+    """Render the prepared PR body in the shape of the repository PR template."""
     card = read_card(root, batch_id)
     state = read_state(root, batch_id)
-    changed = changed_paths(root, str(state.get("base", "main")), load_config(root))
+    anchor = str(state.get("scope_base") or state.get("base", "main"))
+    changed = changed_paths(root, anchor, load_config(root))
+    scope = state.get("scope") or {}
+    checks = state.get("checks") or {}
+    base = state.get("base_ref") or state.get("base", "")
     lines = [
-        f"# {card.get('goal', '')}",
+        "## Summary",
         "",
-        "## Batch",
+        f"Batch `{batch_id}`: {card.get('goal', '')}",
         "",
-        f"- ID: `{batch_id}`",
         f"- Branch: `{state.get('branch', '')}`",
-        f"- Base: `{state.get('base', '')}`",
+        f"- Base: `{base}`",
         "",
-        "## Scope",
+        "## Impact",
         "",
         "Allowed:",
         *[f"- `{item}`" for item in card.get("allowed", [])],
@@ -1325,26 +1576,46 @@ def pr_body(root: Path, batch_id: str) -> str:
         f"Changed files: {len(changed)}",
         *[f"- `{item}`" for item in changed],
         "",
-        "## Checks",
+        "## Verification",
         "",
     ]
-    checks = state.get("checks", {})
     if checks:
-        lines.extend(f"- {name}: {result.get('status')}" for name, result in checks.items())
+        lines.extend(
+            f"- `{name}`: {item.get('status', 'unknown')}"
+            for name, item in checks.items()
+        )
     else:
-        lines.append("- none configured")
-    lines.extend(["", "## Acceptance", ""])
-    criteria = card.get("acceptance", card.get("exit_criteria", []))
-    lines.extend(f"- {item}" for item in criteria) if criteria else lines.append("- none recorded")
-    lines.extend(
-        [
-            "",
-            "## Evidence",
-            "",
-            f"- `.batch/{batch_id}/evidence.log`",
-            "",
-        ]
+        lines.append("- checks: none configured")
+    budget = int(scope.get("budget") or 0)
+    added = int(scope.get("added") or 0)
+    deleted = int(scope.get("deleted") or 0)
+    lines.append(
+        f"- scope: {str(scope.get('result', 'unknown')).upper()} "
+        f"({scope.get('changed', len(changed))} files, {added + deleted} lines, "
+        f"budget {budget or 'none'})"
     )
+    lines.append(f"- evidence: `.batch/{batch_id}/evidence.log`")
+    lines.extend(["", "## Risks", ""])
+    risks = [str(item) for item in scope.get("violations", [])]
+    if budget and added + deleted > budget:
+        risks.append(f"budget: {added + deleted} changed lines exceeds {budget}")
+    if int(scope.get("binary") or 0):
+        risks.append(f"binary files: {scope.get('binary')} (diff is not reviewable)")
+    for key, label in (("id_error", "id"), ("source_error", "source")):
+        if state.get(key):
+            risks.append(f"{label}: {state[key]}")
+    warnings = (state.get("changelog") or {}).get("warnings") or []
+    risks.extend(str(item) for item in warnings)
+    if risks:
+        lines.extend(f"- {item}" for item in risks)
+    else:
+        lines.append("None recorded by the gate.")
+    lines.extend(["", "## Self-check", ""])
+    criteria = card.get("acceptance", card.get("exit_criteria", []))
+    if criteria:
+        lines.extend(f"- {item}" for item in criteria)
+    else:
+        lines.append("- none recorded")
     return "\n".join(lines)
 
 
@@ -1455,7 +1726,7 @@ def pr_translations(
     write_json(
         directory / "pr-body.manifest.json",
         {
-            "source": body_path.relative_to(root).as_posix(),
+            "source": source_relative(root, body_path),
             "source_sha256": digest,
             "source_locale": source_locale,
             "generated_at": utc_now(),
@@ -1506,6 +1777,37 @@ def cmd_pr(args: argparse.Namespace) -> int:
     if card.get("legacy"):
         print("legacy cards have no PR flow", file=sys.stderr)
         return 1
+    config = load_config(root)
+    rule = commit_rule(root, config)
+    title = str(card.get("goal", batch_id))
+    if rule["enabled"]:
+        kind = str(card.get("type", ""))
+        if rule["types"] and kind not in rule["types"]:
+            print(
+                f"card type '{kind}' is not a commit type; use one of: "
+                f"{', '.join(rule['types'])}",
+                file=sys.stderr,
+            )
+            return 1
+        scope = str(card.get("git_scope") or "").strip()
+        if rule["scopes"] and not scope:
+            print(
+                "card.git_scope is required when git scopes are configured; "
+                f"choose one of: {', '.join(rule['scopes'])}",
+                file=sys.stderr,
+            )
+            return 1
+        if scope and rule["scopes"] and scope not in rule["scopes"]:
+            print(
+                f"card.git_scope '{scope}' is not one of: "
+                f"{', '.join(rule['scopes'])}",
+                file=sys.stderr,
+            )
+            return 1
+        if scope:
+            title = f"{kind}({scope}): {card.get('goal')}"
+        else:
+            title = f"{kind}: {card.get('goal')}"
     approval = load_json(batch_dir(root, batch_id) / "approval.json")
     if approval is None or approval.get("card_hash") != card_hash(card):
         print("card is not approved (or approval is stale)", file=sys.stderr)
@@ -1514,17 +1816,33 @@ def cmd_pr(args: argparse.Namespace) -> int:
     if not current:
         print(message, file=sys.stderr)
         return 1
-    body = pr_body(root, batch_id)
-    body_path = args.body_file or (batch_dir(root, batch_id) / "pr-body.md")
+    source: Path | None = None
+    if args.body_from:
+        source = Path(args.body_from)
+        source = source if source.is_absolute() else root / source
+        if not source.is_file():
+            print(f"body source not found: {source}", file=sys.stderr)
+            return 2
+        payload = source.read_text(encoding="utf-8")
+    else:
+        payload = pr_body(root, batch_id) + "\n"
+    body_path = Path(args.body_file) if args.body_file else (batch_dir(root, batch_id) / "pr-body.md")
     body_path = body_path if body_path.is_absolute() else root / body_path
-    write_text(body_path, body + "\n")
-    digest = hashlib.sha256(body.encode("utf-8")).hexdigest()
-    print(f"prepared {body_path.relative_to(root)}")
+    if not inside_project(root, body_path):
+        print(f"body output must stay inside the project: {body_path}", file=sys.stderr)
+        return 2
+    if source is not None and body_path.resolve() == source.resolve():
+        print("--body-from and --body-out point at the same file", file=sys.stderr)
+        return 2
+    write_text(body_path, payload)
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    shown = source_relative(root, body_path)
+    print(f"prepared {shown}")
     print(f"body hash: {digest[:8]}")
     state["status"] = "pr_ready"
-    state["pr_body"] = str(body_path.relative_to(root))
+    state["pr_body"] = shown
     state["pr_body_sha256"] = digest
-    config = load_config(root)
+    state["pr_title"] = title
     state["pr_translations"] = pr_translations(
         root, batch_id, body_path, digest, config, state
     )
@@ -1549,7 +1867,7 @@ def cmd_pr(args: argparse.Namespace) -> int:
         command,
         {
             "id": batch_id,
-            "title": str(card.get("goal", batch_id)),
+            "title": title,
             "body": str(body_path),
             "branch": str(state.get("branch", "")),
             "root": str(root),
@@ -1648,6 +1966,9 @@ def cmd_merge(args: argparse.Namespace) -> int:
         print(err, file=sys.stderr)
     if code != 0:
         return 1
+    merged_problems = check_merged_commit(root, config)
+    for item in merged_problems:
+        print(f"warning: merged commit: {item}", file=sys.stderr)
     state["status"] = "merged"
     state["merged_at"] = utc_now()
     write_json(batch_dir(root, batch_id) / "state.json", state)
@@ -1860,13 +2181,27 @@ def build_parser() -> argparse.ArgumentParser:
 
     check = sub.add_parser("check", help="check scope and configured commands")
     check.add_argument("id", nargs="?")
+    check.add_argument(
+        "--release",
+        action="store_true",
+        help="also run config.release_checks",
+    )
     check.set_defaults(func=cmd_check)
 
     pr = sub.add_parser("pr", help="prepare or create a PR body")
     pr.add_argument("id", nargs="?")
     pr.add_argument("--prepare", action="store_true")
     pr.add_argument("--create", action="store_true")
-    pr.add_argument("--body-file")
+    pr.add_argument(
+        "--body-out",
+        "--body-file",
+        dest="body_file",
+        help="where to write the body (default .batch/<id>/pr-body.md)",
+    )
+    pr.add_argument(
+        "--body-from",
+        help="read the body from this file instead of generating it",
+    )
     pr.add_argument("--confirm")
     pr.set_defaults(func=cmd_pr)
 

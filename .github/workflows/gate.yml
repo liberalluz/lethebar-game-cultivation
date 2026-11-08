@@ -12,6 +12,10 @@
 #   check_pack  the archive holds only what the envelope allows
 #   publish     the tag's zip and descriptor go onto the release
 #
+# On a pull request it also runs `check_commit_body.py`, which reads the commits
+# the branch would add: a commit that does not say why it exists is a change
+# nobody can review later.
+#
 # The tools live in `infra/`, next to the packs they check: the gate runs this
 # checkout's copies, so the repository and its gate move together and nothing
 # else has to be reachable at a pinned ref.
@@ -20,6 +24,14 @@ name: gate
 
 on:
   pull_request:
+    # A pull request that only touches prose or the scaffold cannot change a
+    # pack, so it does not need the archive built. Tag pushes are deliberately
+    # not filtered: a `pack/*` tag must publish even when its commit touched
+    # nothing the filter would match.
+    paths:
+      - "packs/**"
+      - "infra/**"
+      - ".github/workflows/gate.yml"
   push:
     branches: [main]
     tags: ["pack/*"]
@@ -33,11 +45,27 @@ jobs:
     steps:
       - name: Check out this repository
         uses: actions/checkout@v4
+        with:
+          # On a pull request, check the branch head rather than the synthetic
+          # merge commit: the commit-body check reads `origin/<base>..HEAD`, and
+          # a merge commit has no body of its own. Push events keep their ref.
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+          # The commit-body check reads the branch's commits, so it needs the
+          # history the default shallow clone leaves out.
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: check_commit_body
+        if: github.event_name == 'pull_request'
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin \
+            "+refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}"
+          python infra/checks/check_commit_body.py
 
       - name: build
         run: |

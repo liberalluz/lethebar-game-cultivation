@@ -4,6 +4,7 @@ Controlled docs live in `controlled/`.
 
 | Spec | Covers |
 |---|---|
+| [`packs.md`](packs.md) | The registry: every pack in the repository, its kind, version and whether it is released |
 | [`cultivation-pack.md`](cultivation-pack.md) | What the pack is: identity fields, the five nodes, translations, saves, what not to change |
 | [`roguelike-design.md`](roguelike-design.md) | The frame for the dispatch pack: seven slots, the loop, and where every decision lives |
 | [`cultivation-rogue-pack.md`](cultivation-rogue-pack.md) | Identity, layout, naming and envelope of the second pack |

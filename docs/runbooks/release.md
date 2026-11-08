@@ -52,6 +52,40 @@ python infra/tool/release/pack.py self-test
 python infra/checks/check_pack.py --self-test
 ```
 
+## Preflight
+
+`preflight.py` reads a pack **directory** (not the archive) and checks six
+things in order: the manifest, the version contract, the archive, the
+descriptor, the release, and whether the published asset can be fetched over
+the network.
+
+```bash
+python infra/tool/release/preflight.py \
+  --pack packs/cultivation \
+  --repo liberalluz/lethebar-game-cultivation \
+  --tag pack/cultivation/v1.0.1
+```
+
+```
+[1/6] manifest - ok: manifest.json names cultivation
+[2/6] version and contract - ok: version 1.0.1, specVersion 2.0.0, engine >=4.7.0 <5.0.0
+[3/6] artifact - ok: dist\cultivation.zip (2715 bytes)
+[4/6] descriptor - ok: dist\cultivation-1.0.1.json names sha256 2157bf94...
+[5/6] release - ok: ... has a release for pack/cultivation/v1.0.1
+[6/6] asset over the network - missing: ... answered HTTP 504
+preflight: 5/6 item(s) ready
+```
+
+The last two items are about the published release, so they can only pass after
+`publish` has run; running it before that is how you find out the first four
+are fine. Exit code 1 with `5/6` after a real publish means the network, not
+the release: in this checkout `github.com` sometimes resolves to an address
+that answers `504`, and the check passes again from a machine that can reach the
+download endpoint. On Windows the tool may also print a `UnicodeDecodeError`
+traceback from its `gh` subprocesses while the six-line report still prints;
+that is a decoding warning in the vendored script, not a failed check, and the
+copy is kept byte-identical to the engine's.
+
 ## Publish
 
 Either let CI do it — push the tag and the `publish` step creates the release

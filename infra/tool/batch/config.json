@@ -3,15 +3,97 @@
   "branch_prefix": "batch/",
   "docs_root": "",
   "scope": {
-    "ignore": [],
-    "generated": []
+    "ignore": [
+      "dist/**"
+    ],
+    "generated": [
+      "dist/**"
+    ]
   },
   "checks": [
+    {
+      "name": "commit-body",
+      "command": [
+        "python",
+        "infra/checks/check_commit_body.py"
+      ],
+      "cwd": "."
+    },
+    {
+      "name": "author-gate",
+      "command": [
+        "python",
+        "infra/checks/check_author_gate.py",
+        "--template",
+        ".github/workflows/gate.yml"
+      ],
+      "cwd": "."
+    },
+    {
+      "name": "release-tool",
+      "command": [
+        "python",
+        "infra/tool/release/pack.py",
+        "self-test"
+      ],
+      "cwd": "."
+    },
+    {
+      "name": "pack-envelope",
+      "command": [
+        "python",
+        "infra/checks/check_pack.py",
+        "--self-test"
+      ],
+      "cwd": "."
+    },
     {
       "name": "translation",
       "command": [
         "python",
         "infra/checks/check_translation.py"
+      ],
+      "cwd": "."
+    },
+    {
+      "name": "pack-cultivation",
+      "command": [
+        "python",
+        "infra/tool/release/pack.py",
+        "build",
+        "packs/cultivation",
+        "--out",
+        "dist"
+      ],
+      "cwd": "."
+    },
+    {
+      "name": "envelope-cultivation",
+      "command": [
+        "python",
+        "infra/checks/check_pack.py",
+        "dist/cultivation.zip"
+      ],
+      "cwd": "."
+    },
+    {
+      "name": "pack-cultivation-rogue",
+      "command": [
+        "python",
+        "infra/tool/release/pack.py",
+        "build",
+        "packs/cultivation-rogue",
+        "--out",
+        "dist"
+      ],
+      "cwd": "."
+    },
+    {
+      "name": "envelope-cultivation-rogue",
+      "command": [
+        "python",
+        "infra/checks/check_pack.py",
+        "dist/cultivation-rogue.zip"
       ],
       "cwd": "."
     }

@@ -1,23 +1,26 @@
 {
   "id": "cultivation-rogue",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "specVersion": "2.0.0",
   "kind": "bundle",
+  "requires": [],
   "engine": ">=4.7.0 <5.0.0",
   "name": "修仙·派遣",
-  "names": {
-    "zh-CN": "修仙·派遣",
-    "en": "Cultivation: Dispatch"
-  },
   "defaultLocale": "zh-CN",
   "locales": [
     "en"
   ],
+  "names": {
+    "zh-CN": "修仙·派遣",
+    "en": "Cultivation: Dispatch"
+  },
   "protocol": "linear@1",
   "capabilities": [
     "narrative@1",
     "text@1",
     "locale@1",
+    "ledger@1",
+    "rules@1",
     "save@2"
   ],
   "mechanics": [
@@ -28,10 +31,10 @@
   "assets": [],
   "meta": {
     "pitch": {
-      "en": "Wake up as the master of nine disciples who no longer need you.",
-      "zh-CN": "醒来时你已是师尊，九个徒弟早已不需要你。"
+      "zh-CN": "师尊说你天生剑骨，二师兄说你是金身。他们都靠你信。",
+      "en": "The master says you were born with a sword in your bones. The second brother says your body is the weapon. Both need you to believe it."
     },
     "audience": "teens",
-    "minutes": 10
+    "minutes": 8
   }
 }

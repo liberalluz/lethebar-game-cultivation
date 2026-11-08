@@ -1,0 +1,16 @@
+{
+  "rules": [
+    {
+      "when": {"key": "belief.sword", "op": "gte", "value": 2},
+      "set": {"qi": {"add": 1}}
+    },
+    {
+      "when": {"key": "belief.body", "op": "gte", "value": 2},
+      "set": {"qi": {"add": 1}}
+    },
+    {
+      "when": {"key": "turn", "op": "gte", "value": 1},
+      "set": {"insight": {"add": 1}}
+    }
+  ]
+}

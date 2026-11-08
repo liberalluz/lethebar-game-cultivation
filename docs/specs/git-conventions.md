@@ -87,13 +87,18 @@ Scopes: pick exactly one from the closed list below.
 
 ## 3. Pull requests
 
-- From B2 on, a change opens with a batch card in `process/batches/<id>.md` and
-  reaches `main` as a pull request; B1 and earlier landed directly and are not
-  retrofitted.
-- One PR = one batch = one behaviour that changed, and how it was verified.
-- Not one day of work, and not one commit.
-- Fill the PR template; no placeholders.
-- Link the issue or record if one exists.
+- From B2 on, a change walks one order: batch card in `process/batches/<id>.md`
+  → branch → commits (each with `Why:` and `Batch:`) → pull request → one
+  code-owner approval → squash merge → exit record in `records/live/`. B1 and
+  earlier landed directly and are not retrofitted.
+- One PR = one batch = one behaviour that changed, and how it was verified. Not
+  one day of work, and not one commit.
+- The PR body is `.github/PULL_REQUEST_TEMPLATE.md`, filled in: summary, impact,
+  verification with the lines that decide the outcome, risks and rollback,
+  self-check. An empty body, or a template still holding its comments, is a
+  blocking fault, not a shortcut — the reviewer has nothing to approve.
+- Link the batch card, the issue or the record this PR serves. A PR that cannot
+  name its batch is either paperwork (say so in the self-check) or out of order.
 - Reference another pull request as a written link. A bare `#<n>` is expanded
   by the renderer into that pull request's title; the written link
   (`[#<n>](https://github.com/<owner>/<repo>/pull/<n>)`) is the only form that

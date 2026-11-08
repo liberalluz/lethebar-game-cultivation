@@ -15,6 +15,9 @@ process/<topic>      process or tooling only
 
 - One branch = one change.
 - Delete the branch after merge.
+- `main` is protected: a change lands as a pull request with one approval from
+  a code owner, and the branch stays linear. A maintainer cannot push to it,
+  including for a workflow file; §8 says how that commit travels.
 
 ## 2. Commits
 
@@ -84,7 +87,10 @@ Scopes: pick exactly one from the closed list below.
 
 ## 3. Pull requests
 
-- One PR = one behaviour that changed, and how it was verified.
+- From B2 on, a change opens with a batch card in `process/batches/<id>.md` and
+  reaches `main` as a pull request; B1 and earlier landed directly and are not
+  retrofitted.
+- One PR = one batch = one behaviour that changed, and how it was verified.
 - Not one day of work, and not one commit.
 - Fill the PR template; no placeholders.
 - Link the issue or record if one exists.
@@ -111,6 +117,9 @@ Scopes: pick exactly one from the closed list below.
   writes the file from Python and has no such step.
 - The author does not self-approve.
 - No direct push to `main`.
+- Protection on `main` asks for one approving review, counts code owners only,
+  dismisses a stale approval, and keeps history linear. `@liberalluz` and
+  `@wilkommel` are the code owners; either can approve the other's pull request.
 - A failed check is fixed, not bypassed.
 - After merging, run `python infra/tool/merge/pr_merge.py --verify-only`; §2
   says what it reads and why nothing else checks that commit.

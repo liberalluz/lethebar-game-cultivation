@@ -12,9 +12,11 @@ English · [简体中文](CONTRIBUTING.zh-CN.md)
 ## Flow
 
 ```text
-branch -> commit -> PR -> review -> merge
+batch card -> branch -> commit -> PR -> one approval -> squash merge
 ```
 
+- Open the batch card first; the PR links it.
+- `main` is protected: one approving review from a code owner, linear history.
 - Do not push to `main`.
 - Keep a branch short-lived.
 - Fill the PR template; no placeholders.

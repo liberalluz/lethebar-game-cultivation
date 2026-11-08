@@ -1,12 +1,39 @@
 {
 	"a1-s01": {
-		"text": "You wake in the firewood shed of the Xuanshan Sect. Three hundred years pass like a dream that never quite lifted, and the snow outside falls without a sound. Someone is calling your name, and the word they use is 'master' — you do not remember taking a disciple.",
+		"text": "Seven lamps hang from the woodshed beam; three are lit. The master stands in the doorway and says he has looked at your back: \"Sword qi leaks between the bones. You were born with a sword in them.\" Behind him the second brother mutters: \"Don't listen. That's a body forged by hard training. An iron body.\"",
 		"choices": [
-			"Push the door open"
+			"I believe the master.",
+			"I believe the second brother."
 		]
 	},
-	"a1-s02": {
-		"text": "Nine of them stand outside, each with a breath like a deep well. The first kneels into the snow, looks up, and says: master, the ten thousand clans are here again. Your own voice comes out level. You ask him: which clan, this time.",
+	"a1-s02-sword": {
+		"text": "Seven old cuts mark the bluestone behind the hill. The master puts a wooden sword in your hand: \"Split it, and the sword-bone wakes.\" You strike; the stone parts, the break flat as a knife cut. The master smiles: \"There.\"",
+		"choices": [
+			"Believe him again. Ask what comes next.",
+			"Ask him: if I have a sword-bone, why won't you let me meet the sect head?"
+		]
+	},
+	"a1-s02-body": {
+		"text": "The bricks in the west wall are new. The second brother has you throw a punch: \"An iron body doesn't look at swords. It looks at bone.\" Three bricks shatter; your knuckles only redden. \"There,\" he says. \"Done.\" A length of old straw rope shows in the gap.",
+		"choices": [
+			"Believe him again. Ask what comes next.",
+			"Crouch and look at the gap: who replaced these bricks?"
+		]
+	},
+	"a1-s03-sword": {
+		"text": "The master teaches you three sword formulas, each spoken only halfway. You practise them, and at night your back really does run hot. Half a year on you can split three feet of bluestone in one stroke, and the master watches from under the eaves without a word. You remember he never took you to meet the sect head, and that you never asked.",
+		"choices": []
+	},
+	"a1-s03-body": {
+		"text": "The second brother gives you a jar of medicinal wine and says a hundred days of soaking and the iron body comes by itself. On the seventieth day the whole west wall collapses, opening onto an empty room and a floor of old bricks. He laughs from the doorway and says the courtyard was stacked out of bricks from the start.",
+		"choices": []
+	},
+	"a1-s03-turn-sword": {
+		"text": "You hand the wooden sword back: \"You first, master.\" He does not take it. You ask again: \"If I have a sword-bone, what are you afraid of?\" His fingers curl inside his sleeve and he turns and walks away. The next day the sect head sends for you — not because you split the stone, but because you asked.",
+		"choices": []
+	},
+	"a1-s03-turn-body": {
+		"text": "You crouch and pull the straw rope from the gap; a brickworks mark is tied into it. The second brother's smile stops where it is. You say: \"You replaced this wall. You bought the bricks.\" He does not deny it. He only asks: \"So what do you believe now?\"",
 		"choices": []
 	}
 }

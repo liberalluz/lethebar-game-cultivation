@@ -56,6 +56,8 @@ PLAN_MARKER_RE = re.compile(
     r"<!--\s*planned\s*:\s*(?P<id>[A-Za-z0-9-]+)\s+(?P<hash>[0-9a-f]{8,64})\s+(?P<day>\d{4}-\d{2}-\d{2})\s*-->"
 )
 CARD_TYPES = {"feat", "fix", "process", "docs"}
+BUDGET_DEFAULTS = {"docs": 150, "fix": 200, "process": 200, "feat": 400}
+DEFAULT_BUDGET = 400
 COMMIT_TYPES = ("feat", "fix", "docs", "test", "refactor", "chore", "ci")
 COMMIT_SUBJECT_RE = re.compile(
     r"^(?P<type>[a-z]+)(?:\((?P<scope>[^)]+)\))?: (?P<subject>.+)$"
@@ -455,7 +457,6 @@ def validate_planned_card(
         "goal",
         "type",
         "base",
-        "size_budget",
         "allowed",
         "acceptance",
         "changelog",
@@ -473,6 +474,12 @@ def validate_planned_card(
 
     if not isinstance(card.get("goal"), str) or not card["goal"].strip():
         fail("goal must be a non-empty string")
+    if "pr_title" in card:
+        pr_title = card.get("pr_title")
+        if not isinstance(pr_title, str) or not pr_title.strip():
+            fail("pr_title must be a non-empty string")
+        if "\n" in pr_title or "\r" in pr_title:
+            fail("pr_title must be a single line")
     allowed = types or CARD_TYPES
     if card.get("type") not in allowed:
         fail(f"type must be one of: {', '.join(sorted(allowed))}")
@@ -480,9 +487,13 @@ def validate_planned_card(
     if not isinstance(base, str) or not base.strip() or any(ch.isspace() for ch in base):
         fail("base must be a non-empty branch name")
 
-    budget = card.get("size_budget")
-    if type(budget) is not int or budget < 1:
-        fail("size_budget must be an integer greater than zero")
+    if "size_budget" in card:
+        budget = card.get("size_budget")
+        if type(budget) is not int or budget < 1:
+            fail("size_budget must be an integer greater than zero")
+    else:
+        card["size_budget"] = BUDGET_DEFAULTS.get(str(card.get("type")), DEFAULT_BUDGET)
+        card["size_budget_default"] = True
     if "release" in card and not isinstance(card["release"], bool):
         fail("release must be a boolean")
 
@@ -1447,6 +1458,17 @@ def cmd_check(args: argparse.Namespace) -> int:
     state["scope_base"] = anchor
     changed, violations = check_scope(root, card, anchor, config)
     added, deleted, binary, budget_error = check_budget(root, card, anchor, changed)
+    override_reason = str(getattr(args, "allow_over_budget", "") or "").strip()
+    budget_override: dict[str, Any] | None = None
+    if budget_error and override_reason:
+        budget_override = {
+            "budget": int(card.get("size_budget", 0)),
+            "lines": added + deleted,
+            "reason": override_reason,
+        }
+        budget_error = None
+    elif budget_error:
+        budget_error += '; rerun with --allow-over-budget "<why>" to record it'
     changelog_errors, changelog_warnings = check_changelog(root, card, changed)
     skill_errors, skill_found = check_skills(root, card)
     evidence_errors, evidence_warnings, skill_records = check_skill_evidence(
@@ -1497,6 +1519,13 @@ def cmd_check(args: argparse.Namespace) -> int:
         append_evidence(root, batch_id, f"warn: {warning}")
     if budget_error:
         append_evidence(root, batch_id, budget_error)
+    if budget_override:
+        append_evidence(
+            root,
+            batch_id,
+            f"budget override: {budget_override['lines']} lines over "
+            f"{budget_override['budget']} ({budget_override['reason']})",
+        )
     for violation in gate_errors:
         print(f"[fail] {violation}", file=sys.stderr)
     for warning in [*changelog_warnings, *evidence_warnings]:
@@ -1518,7 +1547,9 @@ def cmd_check(args: argparse.Namespace) -> int:
         "measured_from": anchor,
         "result": "pass" if not budget_error and not violations else "fail",
         "violations": violations,
+        "override": bool(budget_override),
     }
+    state["budget_override"] = budget_override
     state["changelog"] = {
         "declared": [str(item) for item in card.get("changelog", [])],
         "warnings": changelog_warnings,
@@ -1531,6 +1562,7 @@ def cmd_check(args: argparse.Namespace) -> int:
     print(
         f"budget: {'SKIP' if not card.get('size_budget') else ('FAIL' if budget_error else 'PASS')}"
         f" ({added + deleted} lines from {anchor[:12]})"
+        + (", override recorded" if budget_override else "")
     )
     print(f"changelog: {'FAIL' if changelog_errors else 'PASS'}")
     print(f"release: {'yes' if release else 'no'} ({len(checks)} checks)")
@@ -1597,8 +1629,15 @@ def pr_body(root: Path, batch_id: str) -> str:
     lines.append(f"- evidence: `.batch/{batch_id}/evidence.log`")
     lines.extend(["", "## Risks", ""])
     risks = [str(item) for item in scope.get("violations", [])]
+    override = state.get("budget_override") or None
     if budget and added + deleted > budget:
-        risks.append(f"budget: {added + deleted} changed lines exceeds {budget}")
+        if override:
+            risks.append(
+                f"budget: {added + deleted} changed lines exceeds {budget} — "
+                f"override: {override.get('reason', '')}"
+            )
+        else:
+            risks.append(f"budget: {added + deleted} changed lines exceeds {budget}")
     if int(scope.get("binary") or 0):
         risks.append(f"binary files: {scope.get('binary')} (diff is not reviewable)")
     for key, label in (("id_error", "id"), ("source_error", "source")):
@@ -1779,7 +1818,8 @@ def cmd_pr(args: argparse.Namespace) -> int:
         return 1
     config = load_config(root)
     rule = commit_rule(root, config)
-    title = str(card.get("goal", batch_id))
+    subject = str(card.get("pr_title") or card.get("goal", batch_id)).strip()
+    title = subject
     if rule["enabled"]:
         kind = str(card.get("type", ""))
         if rule["types"] and kind not in rule["types"]:
@@ -1805,9 +1845,9 @@ def cmd_pr(args: argparse.Namespace) -> int:
             )
             return 1
         if scope:
-            title = f"{kind}({scope}): {card.get('goal')}"
+            title = f"{kind}({scope}): {subject}"
         else:
-            title = f"{kind}: {card.get('goal')}"
+            title = f"{kind}: {subject}"
     approval = load_json(batch_dir(root, batch_id) / "approval.json")
     if approval is None or approval.get("card_hash") != card_hash(card):
         print("card is not approved (or approval is stale)", file=sys.stderr)
@@ -1883,6 +1923,119 @@ def cmd_pr(args: argparse.Namespace) -> int:
     state["pr_output"] = out
     write_json(batch_dir(root, batch_id) / "state.json", state)
     print(f"created PR for {batch_id}")
+    return 0
+
+
+def exit_record_draft(
+    card: dict[str, Any], state: dict[str, Any], batch_id: str
+) -> str:
+    """Build an exit record skeleton from the card and the batch state."""
+    scope = state.get("scope") or {}
+    budget = int(scope.get("budget") or card.get("size_budget") or 0)
+    changed = int(scope.get("changed") or 0)
+    lines_changed = int(scope.get("added") or 0) + int(scope.get("deleted") or 0)
+    forced = "yes" if state.get("check_override") else "no"
+    today = str(state.get("merged_at") or utc_now())[:10]
+    rows = [
+        f"# {batch_id} — Exit record",
+        "",
+        "## Result",
+        "",
+        "pass" if state.get("status") == "merged" else "fail",
+        "",
+        "## Delivery",
+        "",
+        "| Field | Value |",
+        "|---|---|",
+        f"| PR | {state.get('pr') or '#fill'} |",
+        "| Commit | `fill` |",
+        f"| Merged at | {today} |",
+        "| By | @fill |",
+        f"| Merge | {state.get('merge_mode') or 'squash'} |",
+        f"| Forced | {forced} |",
+    ]
+    if forced == "yes":
+        reason = str((state.get("check_override") or {}).get("reason", ""))
+        rows.append(f"| Force reason | {reason or 'fill'} |")
+    rows += [
+        "",
+        "## Traceability",
+        "",
+        "- `REQ-fill`",
+        "- `TC-fill`",
+        "",
+        "## Acceptance",
+        "",
+        "| # | Criterion | Evidence | Result |",
+        "|---|---|---|---|",
+    ]
+    criteria = card.get("acceptance") or []
+    for index, item in enumerate(criteria, 1):
+        rows.append(f"| {index} | {item} | fill | fill |")
+    if not criteria:
+        rows.append("| 1 | fill | fill | fill |")
+    rows += ["", "## Skills", "", "| Skill | Plan | Actual | Evidence |", "|---|---|---|---|"]
+    records = state.get("skill_evidence") or {}
+    for item in card.get("skills") or []:
+        skill_id = str(item.get("id", ""))
+        record = records.get(skill_id) or {}
+        plan = "required" if item.get("required") else "optional"
+        actual = record.get("status") or "fill"
+        proof = record.get("proof") or "fill"
+        rows.append(f"| {skill_id} | {plan} | {actual} | {proof} |")
+    if not card.get("skills"):
+        rows.append("| fill | fill | fill | fill |")
+    rows += ["", "## Changelog", ""]
+    fragments = card.get("changelog") or []
+    rows += [f"- `{item}` — fill" for item in fragments] or ["- fill"]
+    rows += [
+        "",
+        "## Scope",
+        "",
+        "| Field | Value |",
+        "|---|---|",
+        f"| Budget | {budget} |",
+        f"| Changed | {lines_changed} |",
+        f"| Result | {'pass' if scope.get('result') == 'pass' else 'fail'} |",
+        "",
+        "## Deviations",
+        "",
+    ]
+    override = state.get("budget_override") or None
+    if override:
+        rows.append(
+            f"- budget override: {override.get('lines')} lines over "
+            f"{override.get('budget')} — {override.get('reason')}"
+        )
+    else:
+        rows.append("- none")
+    rows += ["", "## Follow-ups", "", "- none", ""]
+    return "\n".join(rows)
+
+
+def cmd_exit(args: argparse.Namespace) -> int:
+    root = args.root.resolve()
+    batch_id = resolve_id(root, args.id)
+    card = read_card(root, batch_id)
+    state = read_state(root, batch_id)
+    target = Path(args.out) if args.out else None
+    if target is None:
+        config = load_config(root)
+        docs_root = configured_docs_root(root, config)
+        if docs_root is None:
+            source = card_source_path(root, card)
+            docs_root = docs_root_from_card(source) if source else None
+        if docs_root is None:
+            print("docs repo not found; pass --out <path>", file=sys.stderr)
+            return 2
+        target = docs_root / DOCS_RECORDS / "live" / f"{batch_id}-exit.md"
+    if target.exists() and not args.force:
+        print(f"{target} exists; pass --force to overwrite", file=sys.stderr)
+        return 1
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(exit_record_draft(card, state, batch_id) + "\n", encoding="utf-8")
+    print(f"drafted {target}")
+    print("fill the remaining fields, then run check_records.py")
     return 0
 
 
@@ -2186,6 +2339,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="also run config.release_checks",
     )
+    check.add_argument(
+        "--allow-over-budget",
+        metavar="REASON",
+        help="record why this batch exceeds its size budget",
+    )
     check.set_defaults(func=cmd_check)
 
     pr = sub.add_parser("pr", help="prepare or create a PR body")
@@ -2225,6 +2383,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="why a check_failed batch is accepted (recorded in state.json)",
     )
     merge.set_defaults(func=cmd_merge)
+
+    exit_parser = sub.add_parser(
+        "exit", help="draft the exit record from the card and state"
+    )
+    exit_parser.add_argument("id", nargs="?")
+    exit_parser.add_argument(
+        "--out",
+        help="write here instead of <docs>/records/live/<id>-exit.md",
+    )
+    exit_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="overwrite an existing exit record",
+    )
+    exit_parser.set_defaults(func=cmd_exit)
 
     abort = sub.add_parser("abort", help="abort an unmerged batch")
     abort.add_argument("id", nargs="?")

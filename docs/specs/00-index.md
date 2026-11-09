@@ -10,3 +10,7 @@ Controlled docs live in `controlled/`.
 | [`cultivation-rogue-pack.md`](cultivation-rogue-pack.md) | Identity, layout, naming and envelope of the second pack |
 | [`roguelike-roadmap.md`](roguelike-roadmap.md) | The `0.1.0` to `1.0.0` ladder and the three-part version rules |
 | [`git-conventions.md`](git-conventions.md) | Branches, commits, pull requests, merge, release, language, generated files, workflows |
+| [`controlled/SRS.md`](controlled/SRS.md) | What the two packs must do, as requirements with observable acceptance |
+| [`controlled/SDD.md`](controlled/SDD.md) | Where each requirement lands: manifest field, data file, state key |
+| [`controlled/STP.md`](controlled/STP.md) | One test per requirement, and what makes it pass |
+| [`controlled/STD.md`](controlled/STD.md) | The steps of each test, and what a runner should see |

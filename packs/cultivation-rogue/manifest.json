@@ -1,6 +1,6 @@
 {
   "id": "cultivation-rogue",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "specVersion": "2.0.0",
   "kind": "bundle",
   "requires": [],
@@ -21,6 +21,8 @@
     "locale@1",
     "ledger@1",
     "rules@1",
+    "actions@1",
+    "phases@1",
     "save@2"
   ],
   "mechanics": [

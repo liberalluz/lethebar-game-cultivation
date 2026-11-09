@@ -1,0 +1,13 @@
+{
+  "turns": 12,
+  "ranks": [
+    {"at": 1, "title": "初掌山门"},
+    {"at": 5, "title": "三个名字"},
+    {"at": 9, "title": "山门有了一点样子"}
+  ],
+  "fail": [
+    {"when": {"key": "injury.apan", "op": "gte", "value": 3}, "reason": "阿磐没有回来。"},
+    {"when": {"key": "injury.aying", "op": "gte", "value": 3}, "reason": "阿萤没有回来。"},
+    {"when": {"key": "injury.asu", "op": "gte", "value": 3}, "reason": "阿素没有回来。"}
+  ]
+}

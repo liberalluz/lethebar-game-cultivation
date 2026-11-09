@@ -1,0 +1,94 @@
+{
+  "actions": [
+    {
+      "id": "send-apan-herb",
+      "label": "派阿磐去药谷",
+      "effects": [
+        {"stone": {"add": 3}},
+        {"injury.apan": {"add": 1}},
+        {"trust.apan": {"add": 1}}
+      ],
+      "requires": [
+        {"key": "gate", "op": "gte", "value": 1},
+        {"key": "injury.apan", "op": "lte", "value": 1}
+      ]
+    },
+    {
+      "id": "send-aying-herb",
+      "label": "派阿萤去药谷",
+      "effects": [
+        {"stone": {"add": 4}},
+        {"injury.aying": {"add": 1}},
+        {"greed.aying": {"add": 1}}
+      ],
+      "requires": [
+        {"key": "gate", "op": "gte", "value": 1},
+        {"key": "injury.aying", "op": "lte", "value": 1}
+      ]
+    },
+    {
+      "id": "send-asu-herb",
+      "label": "派阿素去药谷",
+      "effects": [
+        {"stone": {"add": 3}},
+        {"injury.asu": {"add": 1}},
+        {"trust.asu": {"add": 1}}
+      ],
+      "requires": [
+        {"key": "gate", "op": "gte", "value": 1},
+        {"key": "injury.asu", "op": "lte", "value": 1}
+      ]
+    },
+    {
+      "id": "send-apan-ruin",
+      "label": "派阿磐去废墟",
+      "effects": [
+        {"stone": {"add": 5}},
+        {"injury.apan": {"add": 2}},
+        {"greed.apan": {"add": 1}}
+      ],
+      "requires": [
+        {"key": "gate", "op": "gte", "value": 1},
+        {"key": "injury.apan", "op": "lte", "value": 1}
+      ]
+    },
+    {
+      "id": "send-aying-ruin",
+      "label": "派阿萤去废墟",
+      "effects": [
+        {"stone": {"add": 4}},
+        {"injury.aying": {"add": 2}},
+        {"greed.aying": {"add": 1}}
+      ],
+      "requires": [
+        {"key": "gate", "op": "gte", "value": 1},
+        {"key": "injury.aying", "op": "lte", "value": 1}
+      ]
+    },
+    {
+      "id": "send-asu-ruin",
+      "label": "派阿素去废墟",
+      "effects": [
+        {"stone": {"add": 3}},
+        {"injury.asu": {"add": 2}},
+        {"greed.asu": {"add": 2}}
+      ],
+      "requires": [
+        {"key": "gate", "op": "gte", "value": 1},
+        {"key": "injury.asu", "op": "lte", "value": 1}
+      ]
+    },
+    {
+      "id": "rest",
+      "label": "歇一日",
+      "effects": [
+        {"injury.apan": {"add": -1}},
+        {"injury.aying": {"add": -1}},
+        {"injury.asu": {"add": -1}}
+      ],
+      "requires": [
+        {"key": "gate", "op": "gte", "value": 1}
+      ]
+    }
+  ]
+}

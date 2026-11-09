@@ -22,18 +22,30 @@
 	},
 	"a1-s03-sword": {
 		"text": "She nods: \"Then do not ask. Keep practising.\" The master teaches you three sword formulas, each spoken only halfway. You practise them, and at night your back really does run hot. Half a year on you can split three feet of bluestone in one stroke, and the master watches from under the eaves without a word. You remember he never took you to meet the sect head, and that you never asked.",
-		"choices": []
+		"choices": [
+			"Put the three names on the table."
+		]
 	},
 	"a1-s03-body": {
 		"text": "She tucks the rope into her sleeve: \"Then soak the full hundred days.\" The second brother gives you a jar of medicinal wine and says a hundred days of soaking and the iron body comes by itself. On the seventieth day the whole west wall collapses, opening onto an empty room and a floor of old bricks. He laughs from the doorway and says the courtyard was stacked out of bricks from the start.",
-		"choices": []
+		"choices": [
+			"Put the three names on the table."
+		]
 	},
 	"a1-s03-turn-sword": {
 		"text": "She pushes the whetstone back a foot: \"Good question.\" You hand the wooden sword back: \"You first, master.\" He does not take it. You ask again: \"If I have a sword-bone, what are you afraid of?\" His fingers curl inside his sleeve and he turns and walks away. The next day the sect head sends for you — not because you split the stone, but because you asked.",
-		"choices": []
+		"choices": [
+			"Put the three names on the table."
+		]
 	},
 	"a1-s03-turn-body": {
 		"text": "She puts the rope back in your hand: \"Then go ask the brickworks yourself.\" You crouch and pull the straw rope from the gap; a brickworks mark is tied into it. The second brother's smile stops where it is. You say: \"You replaced this wall. You bought the bricks.\" He does not deny it. He only asks: \"So what do you believe now?\"",
+		"choices": [
+			"Put the three names on the table."
+		]
+	},
+	"a2-hub": {
+		"text": "Twelve days. The rice jar at the gate is empty, the herbs still grow on the slope, and someone went into the ruins at night. Apan, Aying and Asu stand below the steps, waiting for you to say go. From now on you can send only one of them out each day.",
 		"choices": []
 	},
 	"a1-voice-sword-believe": {
@@ -63,5 +75,68 @@
 			"(Inward) He truly wants me to succeed.",
 			"(Inward) This courtyard was stacked out of bricks from the start."
 		]
+	},
+	"strings": {
+		"action.send-apan-herb": "Send Apan to the herb valley.",
+		"action.send-aying-herb": "Send Aying to the herb valley.",
+		"action.send-asu-herb": "Send Asu to the herb valley.",
+		"action.send-apan-ruin": "Send Apan into the ruins.",
+		"action.send-aying-ruin": "Send Aying into the ruins.",
+		"action.send-asu-ruin": "Send Asu into the ruins.",
+		"action.rest": "Spend the day resting.",
+		"rank.1": "The gate is yours.",
+		"rank.5": "Three names.",
+		"rank.9": "The gate looks like something.",
+		"failure.0": "Apan did not come back.",
+		"failure.1": "Aying did not come back.",
+		"failure.2": "Asu did not come back.",
+		"resource.belief.sword.0": "Disbelief",
+		"resource.belief.sword.1": "Half-believing",
+		"resource.belief.sword.2": "Deep belief",
+		"resource.belief.sword.3": "Beyond doubt",
+		"resource.belief.body.0": "Disbelief",
+		"resource.belief.body.1": "Half-believing",
+		"resource.belief.body.2": "Deep belief",
+		"resource.belief.body.3": "Beyond doubt",
+		"resource.turn.0": "Takes it all",
+		"resource.turn.1": "Doubted him",
+		"resource.turn.2": "Handed it back",
+		"resource.qi.0": "No sense of qi",
+		"resource.qi.1": "A first stirring",
+		"resource.qi.3": "Flowing through the channels",
+		"resource.qi.6": "Bones hardening",
+		"resource.qi.9": "Full to overflowing",
+		"resource.insight.0": "Sees nothing",
+		"resource.insight.1": "Sees one layer through",
+		"resource.insight.2": "Sees who built the wall",
+		"resource.gate.0": "Outside the gate",
+		"resource.gate.1": "Inside the gate",
+		"resource.stone.0": "The rice jar is empty",
+		"resource.stone.5": "Half a month of rice",
+		"resource.stone.12": "Rice until spring",
+		"resource.injury.apan.0": "Unhurt",
+		"resource.injury.apan.1": "Hurt",
+		"resource.injury.apan.2": "Badly hurt",
+		"resource.injury.apan.3": "Did not come back",
+		"resource.injury.aying.0": "Unhurt",
+		"resource.injury.aying.1": "Hurt",
+		"resource.injury.aying.2": "Badly hurt",
+		"resource.injury.aying.3": "Did not come back",
+		"resource.injury.asu.0": "Unhurt",
+		"resource.injury.asu.1": "Hurt",
+		"resource.injury.asu.2": "Badly hurt",
+		"resource.injury.asu.3": "Did not come back",
+		"resource.greed.apan.0": "No scheme",
+		"resource.greed.apan.1": "Looked twice",
+		"resource.greed.apan.2": "Reached for it",
+		"resource.greed.apan.3": "Gone wild",
+		"resource.greed.aying.0": "No scheme",
+		"resource.greed.aying.1": "Looked twice",
+		"resource.greed.aying.2": "Reached for it",
+		"resource.greed.aying.3": "Gone wild",
+		"resource.greed.asu.0": "No scheme",
+		"resource.greed.asu.1": "Looked twice",
+		"resource.greed.asu.2": "Reached for it",
+		"resource.greed.asu.3": "Gone wild"
 	}
 }

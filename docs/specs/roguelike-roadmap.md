@@ -15,7 +15,7 @@ not when its files exist.
 | `0.1.0` | B3 | a pack that installs: manifest, one entry node, one end node, English cover | the archive builds, passes `check_pack`, installs, walks to the end and saves |
 | `0.2.0` | B4 | first act slice: three scenes, believe / doubt / turn, two believed-technique builds, one ending | two players reach different builds and different endings from the same entry |
 | `0.3.0` | B6 | inner voice: double text, two characters who hear it, reactions that change | the same spoken line, with a different inner voice, draws a different reply |
-| `0.4.0` | next | dispatch: three disciples, three dispatches, injury, doubt, greed | every dispatch changes at least one disciple's state, not only the ledger |
+| `0.4.0` | B9 | dispatch: three disciples, three dispatches, injury, doubt, greed | every dispatch changes at least one disciple's state, not only the ledger |
 | `0.5.0` | not registered | economy and waves: return multiplier, a wave every three years, end-of-run settlement | the snowball rolls, and the wave can stop it |
 | `0.6.0` | not registered | across-run meta: nine disciples who reach the top, a final unlock | the ninth run has a place to end |
 | `0.7.0` | not registered | content: eight to ten disciples, twenty dispatches, three waves, three endings | three to five hours of play without a dead end |

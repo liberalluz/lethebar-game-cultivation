@@ -37,7 +37,7 @@ The engine only reads the zip. The rules that matter here:
 - the archive root holds `manifest.json` and nothing else; every other file
   starts with `data/`, `assets/` or `i18n/`
 - no executable suffix, no symlink, no `..`, no backslash
-- 8 MB archive, 500 entries, 4 MB per entry, 32 MB unpacked
+- 512 entries, 8 MiB per entry, 32 MiB in total
 - paths are lower case with `[a-z0-9._/-]`
 
 `infra/checks/check_pack.py` enforces all of it; the gate runs it before

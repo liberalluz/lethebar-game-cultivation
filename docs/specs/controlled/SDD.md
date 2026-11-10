@@ -1,9 +1,9 @@
 # Software Design Description — Cultivation packages
 
 Status: draft. Describes what ships as `cultivation@1.0.1` and
-`cultivation-rogue@0.4.0`.
-Batch: B10
-Date: 2026-11-09
+`cultivation-rogue@0.5.0`.
+Batch: B12
+Date: 2026-11-10
 
 Requirements are in `SRS.md`. This document says where each one lands: which
 file, manifest field or data key carries it. It is a map, not a rationale —
@@ -23,7 +23,8 @@ the reasons are in `docs/decisions/` and in the pack specs under
 | `REQ-007` | `data/state.json` resources `belief.sword` and `belief.body` (0..3), `data/rules.json` three rules that read them, and the four ending nodes in `data/nodes.json`. |
 | `REQ-008` | A second node graph, not a text field: the listener choices lead to `a1-voice-sword-believe`, `a1-voice-sword-turn`, `a1-voice-body-believe`, `a1-voice-body-turn`, each a scene only that listener produces. |
 | `REQ-009` | `data/actions.json` — six `send-*` and one `rest`; every `send-*` writes `stone` plus `injury.<d>` and one of `trust.<d>`/`greed.<d>`; every dispatch carries `requires` on `gate >= 1` and `injury.<d> <= 1`. |
-| `REQ-010` | `data/phases.json` — `turns: 12`, ranks at days 1/5/9, three `fail` rules on `injury.<d> >= 3`; `packs/cultivation-rogue/data/nodes.json` `a2-hub` with `choices: []` is kept alive by the declared machine. |
+| `REQ-010` | `data/phases.json` — `turns: 36`, ranks at days 1/13/25, three `fail` rules on `injury.<d> >= 3`, one on `ruin` and three on `breach`; `packs/cultivation-rogue/data/nodes.json` `a2-hub` with `choices: []` is kept alive by the declared machine. |
+| `REQ-015` | `manifest.clock: {"per": "turn"}` with `clock@1` in `capabilities`; `data/rules.json` — three `tick >= 12/24/36` rules that set `year`, three `field >= 1/3/6` rules that add a stone each, three `year >= 1/2/3` rules that take one each, three `[year >= N, wall < 3/6/9]` rules that set `breach`, and one `[year >= 1, stone <= 0]` rule that sets `ruin`; `data/actions.json` `dig-wall` (4 stone) and `tend-field` (3 stone) as the only ways to raise `wall` and `field`. |
 | `REQ-011` | `manifest.saveSchema: 1` in both packs; the engine builds the slot key from `manifest.id`, so `cultivation` and `cultivation-rogue` never see each other's saves. |
 | `REQ-012` | `manifest.collection` with the same `id` (`cultivation`) and the same `names` in both manifests; the engine groups by `collection.id`. |
 | `REQ-013` | `.github/workflows/gate.yml` publishes on a `pack/<id>/v*` tag; `pack.py build` writes the archive and `pack.py hash` writes `<id>-<version>.json` holding the sha256. |
@@ -74,12 +75,26 @@ greed. Three disciples make the choice legible: the same site pays differently
 depending on who goes. The refusal path is data, not code: `requires` on
 `injury.<d> <= 1` makes the engine grey the button and print the reason.
 
+Two more actions spend stone without sending anyone: `dig-wall` and
+`tend-field`. Both are gated with `requires` on the price rather than by `costs`
+alone, because the engine does not refuse an action whose costs exceed the
+store — it applies the cost and clamps the result at zero.
+
 ## Day machine
 
-Twelve turns, three ranks, one failure per disciple. The gate node is the
-hinge: it has no choices, so under a pure linear reading it would end the run.
-Declaring `phases.json` changes that — the machine owns the ending, and the
-hub stays alive while days remain.
+Thirty-six turns, three years, five ways to fail. The gate node is the hinge:
+it has no choices, so under a pure linear reading it would end the run.
+Declaring `phases.json` changes that — the machine owns the ending, and the hub
+stays alive while days remain. The ranks sit at days 1, 13 and 25 because that
+is where the years turn; the engine prints a rank as a title, never as a gate.
+
+The clock is what makes the years real. `clock.per` is `turn`, so every action
+bumps `tick`; a rule turns `tick >= 12` into `year 1`. The economy hangs off
+`year` and runs in file order inside the single action that ends the day: the
+year turns, the field pays, upkeep is charged, the wave is checked, then the
+store is checked. That order is why a wall has to be standing before the day
+that crosses a year, and why a run can pay itself one last stone before the
+year takes it.
 
 ## Saves and collection
 

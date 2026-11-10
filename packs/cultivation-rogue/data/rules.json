@@ -13,16 +13,12 @@
       "set": {"insight": {"add": 1}}
     },
     {
-      "when": {"key": "tick", "op": "gte", "value": 12},
-      "set": {"year": {"value": 1}}
+      "when": [{"key": "gate", "op": "gte", "value": 1}, {"key": "tick", "op": "gte", "value": 1}],
+      "set": {"day": {"add": 1}}
     },
     {
-      "when": {"key": "tick", "op": "gte", "value": 24},
-      "set": {"year": {"value": 2}}
-    },
-    {
-      "when": {"key": "tick", "op": "gte", "value": 36},
-      "set": {"year": {"value": 3}}
+      "when": {"key": "day", "op": "gte", "value": 12},
+      "set": {"year": {"add": 1}, "day": {"value": 0}}
     },
     {
       "when": {"key": "field", "op": "gte", "value": 1},
@@ -49,20 +45,48 @@
       "set": {"stone": {"add": -1}}
     },
     {
-      "when": [{"key": "year", "op": "gte", "value": 1}, {"key": "wall", "op": "lt", "value": 3}],
+      "when": [{"key": "seat", "op": "gte", "value": 0}, {"key": "seat", "op": "lte", "value": 2}, {"key": "year", "op": "gte", "value": 1}, {"key": "wall", "op": "lt", "value": 3}],
       "set": {"breach": {"value": 1}}
     },
     {
-      "when": [{"key": "year", "op": "gte", "value": 2}, {"key": "wall", "op": "lt", "value": 6}],
+      "when": [{"key": "seat", "op": "gte", "value": 0}, {"key": "seat", "op": "lte", "value": 2}, {"key": "year", "op": "gte", "value": 2}, {"key": "wall", "op": "lt", "value": 6}],
       "set": {"breach": {"value": 2}}
     },
     {
-      "when": [{"key": "year", "op": "gte", "value": 3}, {"key": "wall", "op": "lt", "value": 9}],
+      "when": [{"key": "seat", "op": "gte", "value": 0}, {"key": "seat", "op": "lte", "value": 2}, {"key": "year", "op": "gte", "value": 3}, {"key": "wall", "op": "lt", "value": 9}],
+      "set": {"breach": {"value": 3}}
+    },
+    {
+      "when": [{"key": "seat", "op": "gte", "value": 3}, {"key": "seat", "op": "lte", "value": 5}, {"key": "year", "op": "gte", "value": 1}, {"key": "wall", "op": "lt", "value": 4}],
+      "set": {"breach": {"value": 1}}
+    },
+    {
+      "when": [{"key": "seat", "op": "gte", "value": 3}, {"key": "seat", "op": "lte", "value": 5}, {"key": "year", "op": "gte", "value": 2}, {"key": "wall", "op": "lt", "value": 7}],
+      "set": {"breach": {"value": 2}}
+    },
+    {
+      "when": [{"key": "seat", "op": "gte", "value": 3}, {"key": "seat", "op": "lte", "value": 5}, {"key": "year", "op": "gte", "value": 3}, {"key": "wall", "op": "lt", "value": 9}],
+      "set": {"breach": {"value": 3}}
+    },
+    {
+      "when": [{"key": "seat", "op": "gte", "value": 6}, {"key": "seat", "op": "lte", "value": 9}, {"key": "year", "op": "gte", "value": 1}, {"key": "wall", "op": "lt", "value": 5}],
+      "set": {"breach": {"value": 1}}
+    },
+    {
+      "when": [{"key": "seat", "op": "gte", "value": 6}, {"key": "seat", "op": "lte", "value": 9}, {"key": "year", "op": "gte", "value": 2}, {"key": "wall", "op": "lt", "value": 8}],
+      "set": {"breach": {"value": 2}}
+    },
+    {
+      "when": [{"key": "seat", "op": "gte", "value": 6}, {"key": "seat", "op": "lte", "value": 9}, {"key": "year", "op": "gte", "value": 3}, {"key": "wall", "op": "lt", "value": 9}],
       "set": {"breach": {"value": 3}}
     },
     {
       "when": [{"key": "year", "op": "gte", "value": 1}, {"key": "stone", "op": "lte", "value": 0}],
       "set": {"ruin": {"value": 1}}
+    },
+    {
+      "when": {"key": "year", "op": "gte", "value": 3},
+      "set": {"seat": {"add": 1}, "year": {"value": 0}, "day": {"value": 0}, "wall": {"add": -3}, "field": {"add": -2}, "stone": {"add": 10}, "trust.apan": {"value": 2}, "trust.aying": {"value": 2}, "trust.asu": {"value": 2}, "injury.apan": {"value": 0}, "injury.aying": {"value": 0}, "injury.asu": {"value": 0}, "greed.apan": {"value": 0}, "greed.aying": {"value": 0}, "greed.asu": {"value": 0}}
     }
   ]
 }

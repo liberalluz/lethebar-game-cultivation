@@ -137,6 +137,40 @@ def run_checkers(repo: Path, docs: Path) -> bool:
     return ok
 
 
+def delete_branch(repo: Path, branch: str) -> bool:
+    """Delete a merged batch branch on origin first, then locally."""
+    slug = subprocess.run(
+        ["gh", "repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+    )
+    if slug.returncode != 0 or not slug.stdout.strip():
+        print(f"branch  cannot resolve the repository: {slug.stderr.strip()}")
+        return False
+    remote = subprocess.run(
+        ["gh", "api", "-X", "DELETE", f"repos/{slug.stdout.strip()}/git/refs/heads/{branch}"],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+    )
+    if remote.returncode != 0:
+        message = (remote.stderr or remote.stdout).strip().splitlines()
+        print(f"branch  origin/{branch}: {message[-1] if message else 'failed'}")
+        return False
+    print(f"branch  deleted origin/{branch}")
+    local = subprocess.run(
+        ["git", "-C", str(repo), "branch", "-D", branch],
+        capture_output=True,
+        text=True,
+    )
+    if local.returncode == 0:
+        print(f"branch  deleted {branch} locally")
+    else:
+        print(f"branch  local {branch}: {local.stderr.strip()}")
+    return True
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Freeze a batch exit record and close it out.")
     ap.add_argument("--batch", required=True, help="frozen directory name, e.g. 2026-11-B12")
@@ -148,6 +182,12 @@ def main() -> int:
     ap.add_argument("--docs-root", default=None, help="outer docs repository")
     ap.add_argument("--apply", action="store_true", help="write; without it nothing changes")
     ap.add_argument("--commit-docs", action="store_true", help="commit the docs repository")
+    ap.add_argument(
+        "--delete-branch",
+        default=None,
+        metavar="BRANCH",
+        help="after closing, delete this branch locally and on origin",
+    )
     args = ap.parse_args()
 
     repo = Path(args.root).resolve()
@@ -216,6 +256,11 @@ def main() -> int:
         print(f"committed: {message}")
     else:
         print("not committed; pass --commit-docs")
+
+    if args.delete_branch:
+        if not delete_branch(repo, args.delete_branch):
+            print("closed, but the branch is still there")
+            return 1
     return 0
 
 

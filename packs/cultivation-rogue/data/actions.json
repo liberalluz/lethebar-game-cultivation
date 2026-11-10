@@ -89,6 +89,32 @@
       "requires": [
         {"key": "gate", "op": "gte", "value": 1}
       ]
+    },
+    {
+      "id": "dig-wall",
+      "label": "上山取土，垒墙",
+      "costs": {"stone": {"add": -4}},
+      "effects": [
+        {"wall": {"add": 1}}
+      ],
+      "requires": [
+        {"key": "gate", "op": "gte", "value": 1},
+        {"key": "stone", "op": "gte", "value": 4},
+        {"key": "wall", "op": "lte", "value": 8}
+      ]
+    },
+    {
+      "id": "tend-field",
+      "label": "带人去药谷开田",
+      "costs": {"stone": {"add": -3}},
+      "effects": [
+        {"field": {"add": 1}}
+      ],
+      "requires": [
+        {"key": "gate", "op": "gte", "value": 1},
+        {"key": "stone", "op": "gte", "value": 3},
+        {"key": "field", "op": "lte", "value": 5}
+      ]
     }
   ]
 }

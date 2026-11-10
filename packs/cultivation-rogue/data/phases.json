@@ -1,13 +1,17 @@
 {
-  "turns": 12,
+  "turns": 36,
   "ranks": [
-    {"at": 1, "title": "初掌山门"},
-    {"at": 5, "title": "三个名字"},
-    {"at": 9, "title": "山门有了一点样子"}
+    {"at": 1, "title": "第一年"},
+    {"at": 13, "title": "第二年"},
+    {"at": 25, "title": "第三年"}
   ],
   "fail": [
     {"when": {"key": "injury.apan", "op": "gte", "value": 3}, "reason": "阿磐没有回来。"},
     {"when": {"key": "injury.aying", "op": "gte", "value": 3}, "reason": "阿萤没有回来。"},
-    {"when": {"key": "injury.asu", "op": "gte", "value": 3}, "reason": "阿素没有回来。"}
+    {"when": {"key": "injury.asu", "op": "gte", "value": 3}, "reason": "阿素没有回来。"},
+    {"when": {"key": "ruin", "op": "gte", "value": 1}, "reason": "米缸空了。你看着他们分最后一碗。"},
+    {"when": {"key": "breach", "op": "gte", "value": 3}, "reason": "第三年的雪压过墙头，没人再数还剩几个人。"},
+    {"when": {"key": "breach", "op": "gte", "value": 2}, "reason": "第二年的雪来得太早，墙只垒了一半。"},
+    {"when": {"key": "breach", "op": "gte", "value": 1}, "reason": "第一年的雪夜，山门没有墙。"}
   ]
 }

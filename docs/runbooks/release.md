@@ -122,3 +122,36 @@ checked.
 
 `dist/` is generated and git-ignored: never commit it, and never cut a release
 from a dirty tree.
+
+## Closing a batch
+
+A batch ends when its exit record is frozen in the docs repository, not when the
+pull request merges. `infra/tool/batch/closeout.py` runs the seven steps in one
+pass: copy the live record into the batch directory, drop the
+`freeze-manifest.json` the freezer leaves behind, write the batch README table,
+add the index row, correct the two counts on the front page, run the three
+checkers, and commit.
+
+```bash
+python infra/tool/batch/closeout.py --batch 2026-11-B12 --commit a5388dc
+python infra/tool/batch/closeout.py --batch 2026-11-B12 --commit a5388dc \
+  --apply --commit-docs
+```
+
+Without `--apply` it prints the counts it would write and touches nothing. With
+`--apply` it stops at the first failed checker and commits nothing, so a record
+with a broken section cannot reach the docs repository quietly.
+
+Four habits are cheaper than the mistakes they prevent:
+
+- Run `python infra/checks/check_commit_body.py` on the commit before the push.
+  It is the same check the gate runs, and a rejection after the push costs a
+  whole CI round trip.
+- Merge with a body file, never an empty body:
+  `python infra/tool/merge/pr_merge.py --pr 16 --body-only --out dist/body.txt`,
+  then `gh pr merge 16 --squash --body-file dist/body.txt`. Squashing with an
+  empty body drops the lines the verify step reads.
+- Wait on `gh pr checks --watch` instead of a fixed sleep: the watch returns when
+  the run ends, and a guessed interval is either early or wasted.
+- Delete the remote branch after the merge, because `batch.py` does not:
+  `gh api -X DELETE repos/liberalluz/lethebar-game-cultivation/git/refs/heads/<branch>`.

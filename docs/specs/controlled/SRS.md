@@ -1,12 +1,12 @@
 # Software Requirements Specification — Cultivation packages
 
 Status: draft. First baseline is taken when this batch lands.
-Batch: B10
-Date: 2026-11-09
+Batch: B12
+Date: 2026-11-10
 
 This document states what the two packages in this repository must do. It
 describes behaviour that already ships (`cultivation@1.0.1`,
-`cultivation-rogue@0.4.0`); it is not a plan for new behaviour. Design
+`cultivation-rogue@0.5.0`); it is not a plan for new behaviour. Design
 landings are in `SDD.md`, tests in `STP.md` and `STD.md`.
 
 ## Intent
@@ -42,7 +42,8 @@ other worlds (`lethebar-game-sanguo`); the cross-run nine-emperor meta
 | `REQ-007` | The dispatch package records two belief numbers that choices change, and the first act ends in one of four endings selected by those numbers. | Two playthroughs of the first act with opposite replies end on different endings, and the belief numbers recorded at the end differ. |
 | `REQ-008` | A scene may carry a second text that only appears when a listener is present, and one choice can change what the listener believes. | The same scene shows different text with the listener present and absent; a run that takes the revealing choice records a different belief than one that does not. |
 | `REQ-009` | The dispatch package offers six dispatches and one rest; every dispatch changes at least one disciple's injury, trust or greed; a disciple whose injury is 2 or more cannot be sent, and the refusal names the reason; rest can make a disciple sendable again. | Sending a disciple twice to the ruins leaves them at injury 2 and the next dispatch is refused with a reason that names the injury key; resting once allows the dispatch again. |
-| `REQ-010` | The dispatch package gives a run twelve days, three rank titles and one failure per disciple; a run ends in failure when a disciple's injury reaches 3, and the failure names that disciple. | Twelve actions exhaust the days; a disciple at injury 3 ends the run with that disciple's own reason, and the day counter no longer accepts actions. |
+| `REQ-010` | The dispatch package gives a run thirty-six days, three year titles and one failure per disciple; a run ends in failure when a disciple's injury reaches 3, and the failure names that disciple. | Thirty-six actions exhaust the days; a disciple at injury 3 ends the run with that disciple's own reason, and the day counter no longer accepts actions. |
+| `REQ-015` | The dispatch package turns one year every twelve days, pays out what the field has grown, charges one stone of upkeep for every year it has entered, and ends a run when a wave finds the wall too low or the store empty. | The thirteenth action reads year 2 and has charged the first year's upkeep; one field level pays a stone on every action after it is built; a run that enters year 2 with fewer than six wall levels ends on that year's breach line; a run that starts a day with an empty store ends on the empty-store line. |
 | `REQ-011` | Each package saves to three slots under a key built from its id, and a save can be loaded back to the node and ledger state it captured. | A save made in the dispatch package is listed in its own pack only, and loading it returns to the saved node with the same ledger numbers. |
 | `REQ-012` | Both packages declare the same collection id and the same collection names, so the interface can group them as one world. | The package list shows both packages under one world entry; a copy with the collection block removed is listed separately. |
 | `REQ-013` | A release is a git tag `pack/<id>/v<version>` that carries the built archive and a descriptor recording the archive's sha256. | For a published tag, downloading both assets and hashing the archive reproduces the value stored in the descriptor. |
@@ -58,3 +59,10 @@ because a player can see it.
 `REQ-004` is stricter than it reads: the engine treats a missing label as a
 fatal install error, not a cosmetic gap. `0.2.0` and `0.3.0` of the dispatch
 package failed exactly this way; `0.4.0` is the first version that covers it.
+
+`REQ-015` is settled inside one action: the engine turns the year, pays the
+field, charges upkeep and checks the wall in that order, so the wall has to be
+standing before the action that crosses a year boundary. A wall raised after the
+crossing does not save that year, and the field pays before the upkeep is taken,
+so a run can spend its last stone on the field and still lose the store to the
+year.

@@ -1,8 +1,8 @@
 # Software Test Description — Cultivation packages
 
 Status: draft.
-Batch: B10
-Date: 2026-11-09
+Batch: B12
+Date: 2026-11-10
 
 One section per test in `STP.md`. Each says how to set it up, what to do, and
 what to see. All commands run from the repository root; the web build of the
@@ -110,13 +110,13 @@ the third button is disabled, and the reason names `injury.apan`.
 
 Expected: injury drops to 1, the button enables, and the dispatch succeeds.
 
-## TC-PHS-001 — twelve days, three failures
+## TC-PHS-001 — thirty-six days, five failures
 
-1. Rest twelve times, counting the day counter.
+1. Rest thirty-six times, counting the day counter.
 2. On a fresh run, send one disciple to the ruins until injury reaches 3.
 
-Expected: the thirteenth action is refused and the run reports the days are
-spent (a rank title appears at days 1, 5 and 9); at injury 3 the run ends with
+Expected: the thirty-seventh action is refused and the run reports the days are
+spent (a rank title appears at days 1, 13 and 25); at injury 3 the run ends with
 that disciple's own failure line, not a generic one.
 
 ## TC-PHS-002 — the hub stays alive
@@ -125,8 +125,42 @@ that disciple's own failure line, not a generic one.
 2. Read the hub screen: it must hold no choices and still offer the action
    list.
 
-Expected: actions are offered, the day counter reads 12, and the first rank
+Expected: actions are offered, the day counter reads 36, and the first rank
 title is shown.
+
+## TC-ECO-001 — the field pays, the year charges
+
+1. Walk the prologue to the hub and take 带人去药谷开田 once: the store drops by
+   three and `field` reads 1.
+2. Take 歇息 once and read the store: it is one stone more than before the
+   action, because the field paid and the rest costs nothing.
+3. Keep acting until the day counter passes 12, then read the year line.
+
+Expected: after step 1 the store is three lower; from step 2 on every action
+adds a stone from the field; the action that crosses day 12 turns the year to
+第二年 and has also charged one stone of upkeep.
+
+## TC-ECO-002 — the wall has to meet the year
+
+1. Walk to the hub with an empty wall and rest until the day counter passes 12.
+2. Start again, raise the wall to three with 上山取土，垒墙 before day 12, then
+   rest past the year.
+3. Continue into year 2 with three wall levels, then raise the wall to six
+   before the day that crosses into year 3.
+
+Expected: step 1 ends the run on 第一年的雪夜，山门没有墙。; step 2 survives the
+first year because three levels stand before the crossing; step 3 survives the
+second year with six levels, and the same run with five ends on
+第二年的雪来得太早，墙只垒了一半。
+
+## TC-ECO-003 — an empty store ends the run
+
+1. After year 1 has turned, spend the store to zero with 上山取土，垒墙 or
+   带人去药谷开田.
+2. Take one more action.
+
+Expected: the run ends on 米缸空了。你看着他们分最后一碗。 and not on a
+disciple's injury line; the hub stops offering actions.
 
 ## TC-SAV-001 — a save belongs to its pack
 

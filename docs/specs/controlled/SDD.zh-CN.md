@@ -3,9 +3,9 @@
 
 简体中文 · [English](SDD.md)
 
-状态：草稿。描述的是已发布的 `cultivation@1.0.1` 与 `cultivation-rogue@0.4.0`。
-批次：B10
-日期：2026-11-09
+状态：草稿。描述的是已发布的 `cultivation@1.0.1` 与 `cultivation-rogue@0.5.0`。
+批次：B12
+日期：2026-11-10
 
 需求在 `SRS.md`。本文说明每条需求落在哪里：哪个文件、哪个 manifest 字段、
 哪个数据键。它是一张地图，不是理由——理由在 `docs/decisions/` 与
@@ -24,7 +24,8 @@
 | `REQ-007` | `data/state.json` 的 `belief.sword` 与 `belief.body`（0..3），`data/rules.json` 三条读它们的规则，以及 `data/nodes.json` 里四个结局节点。 |
 | `REQ-008` | 走的是一张新节点图，不是新文本字段：听者选项通向 `a1-voice-sword-believe`、`a1-voice-sword-turn`、`a1-voice-body-believe`、`a1-voice-body-turn`，每场只由那位听者引出。 |
 | `REQ-009` | `data/actions.json`——六个 `send-*` 加一个 `rest`；每个 `send-*` 写 `stone`，再写 `injury.<d>` 与 `trust.<d>`/`greed.<d>` 之一；每次派遣都带 `requires`：`gate >= 1` 与 `injury.<d> <= 1`。 |
-| `REQ-010` | `data/phases.json`——`turns: 12`、第 1/5/9 天的位阶、三条 `injury.<d> >= 3` 的 `fail`；`packs/cultivation-rogue/data/nodes.json` 的 `a2-hub` 用 `choices: []`，靠声明的阶段机续命。 |
+| `REQ-010` | `data/phases.json`——`turns: 36`、第 1/13/25 天的年号、三条 `injury.<d> >= 3` 的 `fail`，一条 `ruin`、三条 `breach`；`packs/cultivation-rogue/data/nodes.json` 的 `a2-hub` 用 `choices: []`，靠声明的阶段机续命。 |
+| `REQ-015` | `manifest.clock: {"per": "turn"}`，`capabilities` 里有 `clock@1`；`data/rules.json`——三条 `tick >= 12/24/36` 写 `year`，三条 `field >= 1/3/6` 各加一石，三条 `year >= 1/2/3` 各扣一石，三条 `[year >= N, wall < 3/6/9]` 写 `breach`，一条 `[year >= 1, stone <= 0]` 写 `ruin`；`data/actions.json` 的 `dig-wall`（4 石）与 `tend-field`（3 石）是抬高 `wall` 与 `field` 的唯一办法。 |
 | `REQ-011` | 两个包的 `manifest.saveSchema: 1`；槽位键由引擎按 `manifest.id` 拼，所以 `cultivation` 与 `cultivation-rogue` 永远读不到对方的档。 |
 | `REQ-012` | 两个 manifest 的 `manifest.collection` 写同一个 `id`（`cultivation`）和同一组 `names`；引擎按 `collection.id` 分组。 |
 | `REQ-013` | `.github/workflows/gate.yml` 在 `pack/<id>/v*` 标签上发布；`pack.py build` 写压缩包，`pack.py hash` 写 `<id>-<version>.json` 记 sha256。 |
@@ -66,11 +67,21 @@
 同一个地方，谁去，回报不同。拒绝路径是数据不是代码：`injury.<d> <= 1` 的 `requires`
 让引擎把按钮按下去、把理由印出来。
 
+另外两个动作花石却不派任何人：`dig-wall` 与 `tend-field`。两者都用 `requires`
+把价钱门住，而不是只靠 `costs`——引擎不会拒绝一个花费超过存量的动作，
+它照扣，再把结果夹到零。
+
 ## 日程机
 
-十二个回合、三个位阶、每名弟子一条失败。山门节点是那道铰链：它没有选项，
+三十六个回合、三个年份、五种收场。山门节点是那道铰链：它没有选项，
 在纯线性读法下本该结束本局。声明 `phases.json` 改变了这一点——结束归机器管，
-只要还有天，中枢就继续活着。
+只要还有天，中枢就继续活着。年号落在第 1、13、25 天，因为那是年份翻动的地方；
+引擎只把年号当标题印出来，从不拿它当闸门。
+
+让年份真的存在的是时钟。`clock.per` 是 `turn`，所以每个动作都推一格 `tick`；
+一条规则把 `tick >= 12` 写成 `year 1`。经济挂在 `year` 上，且在结束当天的那个
+动作里按文件顺序跑：翻年、付田产、扣存粮、查墙、查米缸。顺序决定了两件事：
+墙要在跨年那天之前立好；一局可以先把最后一石付给田，再被年份收走。
 
 ## 存档与合集
 

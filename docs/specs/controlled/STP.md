@@ -1,8 +1,8 @@
 # Software Test Plan — Cultivation packages
 
 Status: draft.
-Batch: B10
-Date: 2026-11-09
+Batch: B12
+Date: 2026-11-10
 
 Requirements are in `SRS.md`; each test below names what it covers and what
 makes it pass. The repository has no test runner: a test is a procedure a
@@ -27,8 +27,11 @@ next, because a miss there is fatal at install; play after that; release last.
 | `TC-VOI-001` | `REQ-008` | The four voice scenes are unreachable without the listener choice and reachable with it. |
 | `TC-DSP-001` | `REQ-009` | Every dispatch changes at least one disciple key; a disciple at injury 2 is refused with a reason naming the key. |
 | `TC-DSP-002` | `REQ-009` | One rest returns an injured disciple to sendable, and the next dispatch succeeds. |
-| `TC-PHS-001` | `REQ-010` | Twelve actions exhaust the days; injury 3 ends the run with that disciple's own failure reason. |
-| `TC-PHS-002` | `REQ-010` | The hub offers actions after the gate opens, and the day counter shows 12 at the start. |
+| `TC-PHS-001` | `REQ-010` | Thirty-six actions exhaust the days; injury 3 ends the run with that disciple's own failure reason. |
+| `TC-PHS-002` | `REQ-010` | The hub offers actions after the gate opens, and the day counter shows 36 at the start. |
+| `TC-ECO-001` | `REQ-015` | A field level pays one stone on every later action, and the action that crosses day 12 turns the year and charges one stone of upkeep. |
+| `TC-ECO-002` | `REQ-015` | A run that enters year 2 with fewer than six wall levels ends on that year's breach line; six levels let it continue. |
+| `TC-ECO-003` | `REQ-015` | A run that starts a day with an empty store, after year 1, ends on the empty-store line rather than on an injury. |
 | `TC-SAV-001` | `REQ-011` | A save is visible only in its own package and restores the node and ledger numbers it captured. |
 | `TC-COL-001` | `REQ-012` | Both packages appear under one world entry; removing the block lists one of them separately. |
 | `TC-REL-001` | `REQ-013` | For a published tag, hashing the downloaded archive reproduces the descriptor's sha256. |

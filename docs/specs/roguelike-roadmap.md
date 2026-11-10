@@ -17,7 +17,7 @@ not when its files exist.
 | `0.3.0` | B6 | inner voice: double text, two characters who hear it, reactions that change | the same spoken line, with a different inner voice, draws a different reply |
 | `0.4.0` | B9 | dispatch: three disciples, three dispatches, injury, doubt, greed | every dispatch changes at least one disciple's state, not only the ledger |
 | `0.5.0` | B11 | economy and waves: return multiplier, a wave every three years, end-of-run settlement | the snowball rolls, and the wave can stop it |
-| `0.6.0` | not registered | across-run meta: nine disciples who reach the top, a final unlock | the ninth run has a place to end |
+| `0.6.0` | B13 | nine generations inside one run: nine names on the stone, waves that read the seat | the ninth name lands before the run closes |
 | `0.7.0` | not registered | content: eight to ten disciples, twenty dispatches, three waves, three endings | three to five hours of play without a dead end |
 | `1.0.0` | not registered | balance and polish | no blocking defect; manual and release notes match the build |
 

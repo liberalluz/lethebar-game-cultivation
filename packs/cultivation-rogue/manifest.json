@@ -1,6 +1,6 @@
 {
   "id": "cultivation-rogue",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "specVersion": "2.0.0",
   "kind": "bundle",
   "requires": [],
@@ -32,7 +32,9 @@
   "entry": "a1-s01",
   "saveSchema": 1,
   "assets": [],
-  "clock": {"per": "turn"},
+  "clock": {
+    "per": "turn"
+  },
   "collection": {
     "id": "cultivation",
     "names": {

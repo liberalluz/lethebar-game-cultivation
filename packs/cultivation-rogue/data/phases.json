@@ -1,17 +1,23 @@
 {
-  "turns": 36,
+  "turns": 324,
   "ranks": [
-    {"at": 1, "title": "第一年"},
-    {"at": 13, "title": "第二年"},
-    {"at": 25, "title": "第三年"}
+    {"at": 1, "title": "第一代"},
+    {"at": 37, "title": "第二代"},
+    {"at": 73, "title": "第三代"},
+    {"at": 109, "title": "第四代"},
+    {"at": 145, "title": "第五代"},
+    {"at": 181, "title": "第六代"},
+    {"at": 217, "title": "第七代"},
+    {"at": 253, "title": "第八代"},
+    {"at": 289, "title": "第九代"}
   ],
   "fail": [
     {"when": {"key": "injury.apan", "op": "gte", "value": 3}, "reason": "阿磐没有回来。"},
     {"when": {"key": "injury.aying", "op": "gte", "value": 3}, "reason": "阿萤没有回来。"},
     {"when": {"key": "injury.asu", "op": "gte", "value": 3}, "reason": "阿素没有回来。"},
     {"when": {"key": "ruin", "op": "gte", "value": 1}, "reason": "米缸空了。你看着他们分最后一碗。"},
-    {"when": {"key": "breach", "op": "gte", "value": 3}, "reason": "第三年的雪压过墙头，没人再数还剩几个人。"},
-    {"when": {"key": "breach", "op": "gte", "value": 2}, "reason": "第二年的雪来得太早，墙只垒了一半。"},
-    {"when": {"key": "breach", "op": "gte", "value": 1}, "reason": "第一年的雪夜，山门没有墙。"}
+    {"when": {"key": "breach", "op": "gte", "value": 3}, "reason": "雪线压过墙头，没人再数还剩几个人。"},
+    {"when": {"key": "breach", "op": "gte", "value": 2}, "reason": "雪来得太早，墙只垒了一半。"},
+    {"when": {"key": "breach", "op": "gte", "value": 1}, "reason": "雪夜里，山门还没有墙。"}
   ]
 }

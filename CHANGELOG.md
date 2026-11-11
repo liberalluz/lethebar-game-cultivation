@@ -6,6 +6,11 @@
      `pack/<id>/vX.Y.Z`); `## repo vX.Y.Z` is this repository itself
      (tag `repo/vX.Y.Z`). -->
 
+## cultivation-rogue v0.6.1 - 2026-11-11
+
+### Fixed
+- the ledger block is a file named after its block: `data/ledger.json` replaces `data/state.json`, which engine 0.7.5 no longer reads, so the pack installs again
+
 ## cultivation-rogue v0.6.0 - 2026-11-10
 
 The first archive that installs. `0.4.0` and `0.5.0` were written and never

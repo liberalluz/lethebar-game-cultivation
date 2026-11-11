@@ -52,6 +52,13 @@ python infra/tool/release/pack.py self-test
 python infra/checks/check_pack.py --self-test
 ```
 
+The copies are byte-identical to the engine tag recorded in
+`infra/vendor.json`, which also states the `ENGINE_REF` the gate checks out.
+A copy that drifts from that tag judges packs by rules the engine no longer
+has, so re-vendor all four files together and update the record in the same
+commit. The envelope caps are the engine's: 500 entries, 4 MiB per entry,
+32 MiB unpacked.
+
 ## Preflight
 
 `preflight.py` reads a pack **directory** (not the archive) and checks six
@@ -123,6 +130,24 @@ checked.
 `dist/` is generated and git-ignored: never commit it, and never cut a release
 from a dirty tree.
 
+## Record the release
+
+The release itself is evidence, not a note to write by hand. `closeout.py`
+records it the same way it records a batch:
+
+```bash
+python infra/tool/batch/closeout.py --release pack/cultivation/v1.0.1
+python infra/tool/batch/closeout.py --release pack/cultivation/v1.0.1 \
+  --apply --commit-docs
+```
+
+It writes `records/<YYYY-MM>-release-<pack>-v<version>/` with `release.json`
+(tag, annotated tag object, tag commit, assets, pack bytes and sha256),
+`release-notes.md` fetched back from the published release, and a README; then
+it adds the two index rows, corrects the front-page counts, runs the three
+checkers, and commits. The notes file it wants is the one that was published;
+with no notes file it stops instead of inventing a body.
+
 ## Closing a batch
 
 A batch ends when its exit record is frozen in the docs repository, not when the
@@ -130,7 +155,9 @@ pull request merges. `infra/tool/batch/closeout.py` runs the seven steps in one
 pass: copy the live record into the batch directory, drop the
 `freeze-manifest.json` the freezer leaves behind, write the batch README table,
 add the index row, correct the two counts on the front page, run the three
-checkers, and commit.
+checkers, and commit. `--delete-branch <branch>` also removes the merged branch
+on origin and locally; it refuses the default branch and any branch an open
+pull request still points at.
 
 ```bash
 python infra/tool/batch/closeout.py --batch 2026-11-B12 --commit a5388dc
@@ -153,5 +180,7 @@ Four habits are cheaper than the mistakes they prevent:
   empty body drops the lines the verify step reads.
 - Wait on `gh pr checks --watch` instead of a fixed sleep: the watch returns when
   the run ends, and a guessed interval is either early or wasted.
-- Delete the remote branch after the merge, because `batch.py` does not:
-  `gh api -X DELETE repos/liberalluz/lethebar-game-cultivation/git/refs/heads/<branch>`.
+- Delete the remote branch after the merge, because `batch.py` does not.
+  `closeout.py --delete-branch <branch>` does it in the same pass as the record;
+  for a pull request that is not a batch, the repository's
+  `delete_branch_on_merge` setting already covers the usual case.

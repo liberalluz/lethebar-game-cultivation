@@ -7,7 +7,7 @@ this table and a release disagree, and the disagreement is a bug.
 | Pack | Kind | Version | Released | What it is |
 |---|---|---|---|---|
 | `cultivation` | bundle | 1.0.1 | yes | The five-node linear story, in Chinese and English |
-| `cultivation-rogue` | bundle | 0.3.0 | yes | The dispatch experiment: first act, inner voice, four endings |
+| `cultivation-rogue` | bundle | 0.6.1 | yes | The dispatch experiment: first act, inner voice, four endings |
 
 Both packs declare the same collection, `cultivation` with the names `修仙` and
 `Cultivation`, so the engine draws one world row and offers both bundles under

@@ -6,6 +6,7 @@
 > 一个 Lethebar 世界：同一个故事，两种玩法。
 > 故事是数据，规则是引擎的，这个世界住在这个仓里。
 
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 <!-- pack-badges:begin -->
 ![packs](https://img.shields.io/badge/packs-2-6f42c1)
 ![spec](https://img.shields.io/badge/spec-2.0.0-007ec6)

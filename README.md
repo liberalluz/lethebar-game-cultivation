@@ -6,6 +6,7 @@ English · [简体中文](README.zh-CN.md)
 > The story is data, the rules are the engine's, and this repository is where
 > the world lives.
 
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 <!-- pack-badges:begin -->
 ![packs](https://img.shields.io/badge/packs-2-6f42c1)
 ![spec](https://img.shields.io/badge/spec-2.0.0-007ec6)

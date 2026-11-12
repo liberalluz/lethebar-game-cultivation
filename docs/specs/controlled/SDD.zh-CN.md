@@ -29,6 +29,8 @@
 | `REQ-011` | 两个包的 `manifest.saveSchema: 1`；槽位键由引擎按 `manifest.id` 拼，所以 `cultivation` 与 `cultivation-rogue` 永远读不到对方的档。 |
 | `REQ-012` | 两个 manifest 的 `manifest.collection` 写同一个 `id`（`cultivation`）和同一组 `names`；引擎按 `collection.id` 分组。 |
 | `REQ-013` | `.github/workflows/gate.yml` 在 `pack/<id>/v*` 标签上发布；`pack.py build` 写压缩包，`pack.py hash` 写 `<id>-<version>.json` 记 sha256。 |
+| `REQ-016` | `manifest.capabilities` 加 `persist@1`，`manifest.persist` 声明一个整数键（`emperors`，0..9）；`data/rules.json` 在 `turn eq 1` 的规则里读 `persist.emperors`，加一块田、十二石或两级墙，并把数量抄进 `lineage` 资源，九条标签承载文本。 |
+| `REQ-017` | `manifest.rolls` 声明 `clan` 为 `{"from": 0, "to": 2}`；`data/ledger.json` 加 `wave`（0..2）；`data/rules.json` 在跨年时把 `wave` 归零、用 `add_roll` 花掉抽签，并按 `wave` 取值扣一到两石贡。 |
 | `REQ-014` | `.github/workflows/gate.yml` 遍历 `packs/*/` 跑 `pack.py build` 与 `check_pack.py`，第一个被拒就让任务失败。 |
 
 ## 仓的形状

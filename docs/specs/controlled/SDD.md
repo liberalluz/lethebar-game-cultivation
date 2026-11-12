@@ -15,7 +15,7 @@ the reasons are in `docs/decisions/` and in the pack specs under
 | REQ | Design |
 |---|---|
 | `REQ-001` | One directory per id under `packs/`, and `manifest.id` repeated inside it. `infra/tool/release/pack.py` takes the directory as the build unit and names the archive from `manifest.id`. |
-| `REQ-002` | `infra/checks/check_pack.py` — `MAX_ENTRIES = 512`, `MAX_FILE_BYTES = 8 * 1024 * 1024`, `MAX_TOTAL_BYTES = 32 * 1024 * 1024`; the root allowlist is the single name `manifest.json`. |
+| `REQ-002` | `infra/checks/check_pack.py` — `MAX_ENTRIES = 500`, `MAX_FILE_BYTES = 4 * 1024 * 1024`, `MAX_TOTAL_BYTES = 32 * 1024 * 1024`; the root allowlist is the single name `manifest.json`. |
 | `REQ-003` | `manifest.names` (one key per locale), `manifest.defaultLocale`, `manifest.locales`. The engine prints `names[currentLocale]`. |
 | `REQ-004` | `data/i18n/<locale>.json` — one entry per node id, each with `text` and `choices`, plus a `strings` map for every label the engine can print (`resource.<id>.<value>`, `action.<id>`, `rank.<n>`, `failure.<n>`). |
 | `REQ-005` | `manifest.protocol: "linear@1"`, `manifest.entry`, and `data/nodes.json` where each choice carries `next`. A node with `choices: []` ends the run unless `data/phases.json` exists. |
@@ -28,6 +28,8 @@ the reasons are in `docs/decisions/` and in the pack specs under
 | `REQ-011` | `manifest.saveSchema: 1` in both packs; the engine builds the slot key from `manifest.id`, so `cultivation` and `cultivation-rogue` never see each other's saves. |
 | `REQ-012` | `manifest.collection` with the same `id` (`cultivation`) and the same `names` in both manifests; the engine groups by `collection.id`. |
 | `REQ-013` | `.github/workflows/gate.yml` publishes on a `pack/<id>/v*` tag; `pack.py build` writes the archive and `pack.py hash` writes `<id>-<version>.json` holding the sha256. |
+| `REQ-016` | `manifest.capabilities` gains `persist@1` and `manifest.persist` declares one int key (`emperors`, 0..9); `data/rules.json` reads `persist.emperors` in its `turn eq 1` rules to add one field, twelve stones or two wall levels, and copies the count into the `lineage` resource whose nine labels carry the text. |
+| `REQ-017` | `manifest.rolls` declares `clan` as `{"from": 0, "to": 2}`; `data/ledger.json` gains `wave` (0..2); `data/rules.json` zeroes `wave` at the year boundary, spends the draw with `add_roll`, and takes one or two stones of tribute by `wave` value. |
 | `REQ-014` | `.github/workflows/gate.yml` loops `packs/*/` through `pack.py build` and `check_pack.py`, failing the job on the first rejection. |
 
 ## Repository shape

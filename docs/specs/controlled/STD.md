@@ -192,6 +192,30 @@ edited pack outside that heading.
 Expected: the two values are identical, and the descriptor's version matches
 the tag.
 
+## TC-MTA-001 — a name outlives its run
+
+1. Play a run to the end of its third year without losing a disciple.
+2. Start a new run and read the ledger: the field is already at 1.
+3. Read the state line: the mountain counts one name.
+4. Play a second run and lose a disciple in the second year.
+5. Start a third run: the field is still 1 and the count is still one.
+
+At `0.6.3` the field starts at zero and nothing is remembered between runs,
+so steps 2 and 3 cannot be taken yet; the case is written for `0.7.0` and is
+expected to fail until then.
+
+## TC-ROL-001 — the wave weighs the same
+
+1. Start a run and act until the second year begins; note the wave weight and
+   the stones taken that turn.
+2. Reload the save made just before that action and take it again.
+3. Compare: the weight and the tribute are identical.
+4. Take the same action a third time after a full restart of the run from its
+   first day: still identical at that turn.
+
+Same caveat as above: `0.6.3` has no `rolls` block, so the case fails until
+`0.7.0` lands.
+
 ## TC-CI-001 — a broken pack cannot land quietly
 
 1. On a scratch branch, delete a node from `packs/cultivation/data/nodes.json`

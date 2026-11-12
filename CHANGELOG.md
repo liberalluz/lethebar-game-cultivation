@@ -6,6 +6,11 @@
      `pack/<id>/vX.Y.Z`); `## repo vX.Y.Z` is this repository itself
      (tag `repo/vX.Y.Z`). -->
 
+## cultivation-rogue v0.6.2 - 2026-11-12
+
+### Fixed
+- Every action id and every resource id is now a lowercase id the engine can read (`^[a-z][a-z0-9_]*$`): `send-apan-herb` is `send_apan_herb`, `belief.sword` is `belief_sword`, and the rest follow. The engine refuses the 0.6.1 build on install with V-14 (eleven resource ids) and V-16 (eight action ids); the rename fixes both.
+
 ## cultivation-rogue v0.6.1 - 2026-11-11
 
 ### Fixed

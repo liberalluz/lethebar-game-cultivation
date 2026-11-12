@@ -7,22 +7,32 @@ English · [简体中文](README.zh-CN.md)
 > the world lives.
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Packs](https://img.shields.io/badge/packs-2-6f42c1.svg)](docs/specs/packs.md)
-[![Spec](https://img.shields.io/badge/spec-2.0.0-007ec6.svg)](packs/cultivation/manifest.json)
-[![Engine](https://img.shields.io/badge/engine-%3E%3D4.7.0%20%3C5.0.0-478cbf.svg)](https://github.com/liberalluz/lethebar)
+
+<!-- pack-badges:begin -->
+![packs](https://img.shields.io/badge/packs-2-6f42c1)
+![spec](https://img.shields.io/badge/spec-2.0.0-007ec6)
+![engine](https://img.shields.io/badge/engine-%3E%3D4.7.0%20%3C5.0.0-478cbf)
+
+| Kind | Pack | Version | Spec | Engine |
+| --- | --- | --- | --- | --- |
+| `bundle` | `cultivation` | `1.0.1` | `2.0.0` | `>=4.7.0 <5.0.0` |
+| `bundle` | `cultivation-rogue` | `0.6.3` | `2.0.0` | `>=4.7.0 <5.0.0` |
+<!-- pack-badges:end -->
 
 ## Status
 
 Two packs of one world, both released. `cultivation` carries the five-node
 linear story that used to be built into the engine; `cultivation-rogue` is the
-dispatch experiment, where a weak master sends stronger disciples out and only
-one person hears what anyone really thinks. They share the collection
-`修仙 / Cultivation`, so the engine's pack page shows one world with two ways to
-play.
+dispatch experiment, where a weak master sends stronger disciples out over nine
+generations and only one person hears what anyone really thinks. They share the
+collection `修仙 / Cultivation`, so the engine's pack page shows one world with
+two ways to play.
 
-Versions live in [`docs/specs/packs.md`](docs/specs/packs.md) and on the
-[releases page](https://github.com/liberalluz/lethebar-game-cultivation/releases);
-this file says what the repository is, not what each pack is at.
+The table above is generated from the two manifests by
+`python infra/tool/release/pack.py badge . --write README.md`; the gate runs the
+same command with `--check` and fails when a row drifts. It is the only place
+this file states a version — dates live on the
+[releases page](https://github.com/liberalluz/lethebar-game-cultivation/releases).
 
 ## The story
 
@@ -32,11 +42,13 @@ to `x2` today. That is deliberate: that pack proved the engine loads, advances,
 saves and reloads a pack. Branching is a content change, made later, in
 `packs/cultivation/data/nodes.json`.
 
-`packs/cultivation-rogue/` is the other way to play. Its first act is seven
-nodes and four endings; two visible beliefs (`belief.sword`, `belief.body`) turn
+`packs/cultivation-rogue/` is the other way to play. Its first act is twelve
+nodes and four endings; two visible beliefs (`belief_sword`, `belief_body`) turn
 into `qi` or `insight`, and four inner-voice scenes decide which ending you get.
 Only the senior sister hears the inner voice, so the same sentence spoken aloud
-can mean two different things.
+can mean two different things. An ending opens the gate to a second act: three
+disciples, a field, a wall, and a wave that arrives every year, for nine
+generations and three hundred and twenty-four days.
 
 The visible names are `修仙` and `修仙·派遣` in Chinese, `Cultivation` and
 `Cultivation: Dispatch` in English. The ids are `cultivation` and
@@ -44,91 +56,35 @@ The visible names are `修仙` and `修仙·派遣` in Chinese, `Cultivation` an
 
 ## Installing a pack
 
-The installable form of each pack is its release asset, `<id>.zip`. The engine
-reads `manifest.json` from the archive root, validates it, and then interprets
-the protocol the manifest declares. A pack is data — the engine never executes
-code from inside it.
+Install the archive from the releases page through the engine's own install
+action; how that works, and why a link cannot install one, is in the engine's
+[publishing guide](https://github.com/liberalluz/lethebar/blob/main/docs/guide/publishing.md).
 
-Download the archive and use the engine's install action. A link on the web
-cannot install a pack: the browser's CORS rules stop the engine from reading the
-bytes. The two published archives are on the
-[releases page](https://github.com/liberalluz/lethebar-game-cultivation/releases).
+The save keys are `save:cultivation:<slot>` and
+`save:cultivation-rogue:<slot>`, derived from each manifest id. Saves written by
+the old built-in pack (`save:xiuxian:<slot>`) do not carry over; that id changed
+once, before any pack had been published.
 
-The save keys are `save:cultivation:<slot>` and `save:cultivation-rogue:<slot>`,
-derived from each manifest id. Saves written by the old built-in pack
-(`save:xiuxian:<slot>`) do not carry over; that id changed once, before any pack
-had been published.
+## Building and releasing
 
-## Build and publish
-
-```bash
-python infra/tool/release/release.py --root . --check
-python infra/tool/release/release.py --root . --write --stream <stream> --version v<version>
-
-python infra/tool/release/pack.py build packs/<id> --out dist
-python infra/checks/check_pack.py dist/<id>.zip
-python infra/tool/release/preflight.py --pack packs/<id>
-python infra/tool/release/pack.py hash dist/<id>.zip
-python infra/tool/release/pack.py publish dist/<id>.zip \
-  --repo liberalluz/lethebar-game-cultivation \
-  --tag pack/<id>/v<version> --apply
-```
-
-`release.py` folds the `changelog.d/` fragments into `CHANGELOG.md` and deletes
-only the fragments it consumed; run it first, so the notes and the archive
-describe the same release. The stream is `cultivation`, `cultivation-rogue` or
-`repo`, and it picks which heading the entry lands under.
-
-`build` names the archive from the manifest id, so the directory name and the id
-can never disagree. `check_pack` reads the archive, not the source tree: the root
-may hold only `manifest.json`, and everything else lives under `data/`,
-`assets/` or `i18n/`. `preflight` takes the pack **directory** and checks the
-manifest, the version contract, the archive, the descriptor, and — the last two
-— that the release exists and its assets can be fetched. Run it before `publish`
-knowing that its last two checks only pass after the release exists. `hash`
-writes the descriptor that travels beside the archive. `dist/` is git-ignored and
-never committed.
-
-The tag shape is `pack/<id>/v<version>`; the version inside the archive and the
-version in the tag must match. Publishing needs `gh` authenticated with write
-access to this repository.
-
-CI runs the same steps. `.github/workflows/gate.yml` builds and checks every
-pack in `packs/` with the copies of `pack.py` and `check_pack.py` that live in
-`infra/`, so the gate and the repository move together. On a `pack/*` tag it also
-publishes, and on a pull request it first checks that the branch's commits say
-why they exist.
-
-## Commands
-
-| Command | What it does |
-|---|---|
-| `python infra/tool/release/release.py --root . --check` | Validate the `changelog.d/` fragments without changing anything |
-| `python infra/tool/release/release.py --root . --write --stream <stream> --version v<version>` | Fold the fragments into `CHANGELOG.md` and delete the consumed ones |
-| `python infra/tool/release/pack.py build packs/<id> --out dist` | Zip the pack into `dist/<id>.zip` |
-| `python infra/checks/check_pack.py dist/<id>.zip` | Check the archive against the pack envelope |
-| `python infra/tool/release/preflight.py --pack packs/<id>` | Check manifest, contract, archive, descriptor, release and assets |
-| `python infra/tool/release/pack.py hash dist/<id>.zip` | Write the `id-version.json` descriptor beside the archive |
-| `python infra/tool/release/pack.py publish ...` | Create the release and upload the archive and descriptor |
-| `python infra/tool/release/pack.py self-test` | Check the release tool itself |
-| `python infra/checks/check_pack.py --self-test` | Check the envelope checker itself |
-| `python infra/checks/check_author_gate.py --template .github/workflows/gate.yml` | Check that the CI template still builds, checks, publishes |
-| `python infra/checks/check_commit_body.py` | Check that new commits carry `Why:` and `Batch:` |
-| `python infra/tool/merge/pr_merge.py --self-test` | Check the merge-message tool itself |
-
-Both `self-test` commands create and remove their own fixtures; they need a
-writable repository and nothing else.
+The commands, the tag shape, the pre-publish check and the release evidence are
+in [docs/runbooks/release.md](docs/runbooks/release.md); the engine's
+[publishing guide](https://github.com/liberalluz/lethebar/blob/main/docs/guide/publishing.md)
+is the authority on what a valid archive and a valid release look like. This
+repository's gate builds and checks every pack on each pull request, and
+publishes only on a `pack/*` tag.
 
 ## Project structure
 
 | Path | Holds |
 |---|---|
 | `packs/cultivation/` | The five-node story: `manifest.json`, `data/nodes.json`, `data/mechanics.json`, `data/i18n/en.json` |
-| `packs/cultivation-rogue/` | The dispatch experiment: `manifest.json`, `data/nodes.json`, `data/state.json`, `data/rules.json`, `data/i18n/en.json` |
-| `infra/checks/` | The pack envelope check, the author-gate check, the commit-body check |
-| `infra/tool/release/` | `pack.py`: build, hash, publish; `release.py`: compose the changelog; `preflight.py`: check before publishing |
+| `packs/cultivation-rogue/` | The dispatch game: `manifest.json`, `data/nodes.json`, `data/ledger.json`, `data/actions.json`, `data/rules.json`, `data/phases.json`, `data/i18n/en.json` |
+| `infra/checks/` | The envelope check, the data check, the author-gate check, the commit-body check |
+| `infra/tool/release/` | `pack.py`: build, hash, badge, publish; `release.py`: compose the changelog; `preflight.py`: check before publishing |
 | `infra/tool/merge/` | `pr_merge.py`: build and verify the squash-merge message |
 | `infra/tool/batch/`, `infra/tool/repo/` | Vendored Nebula batch and repository tooling |
+| `product/release-notes/` | One note per pack and version, the text the release page shows |
 | `docs/` | Specs, decisions, intent, runbooks ([docs/README.md](docs/README.md)) |
 
 The repository root holds only what that table lists, plus the conventional root
@@ -139,11 +95,11 @@ files (`README`, `CONTRIBUTING`, `CONTRIBUTING.ai`, `SECURITY`, `LICENSE`,
 
 | Looking for | Where |
 |---|---|
-| The packs, their versions and what each one is | [docs/specs/packs.md](docs/specs/packs.md) |
-| Why this repository exists | [docs/intent/](docs/intent/) |
 | What a pack promises | [docs/specs/](docs/specs/) |
+| Why this repository exists | [docs/intent/](docs/intent/) |
 | What was decided, and what was rejected | [docs/decisions/](docs/decisions/) |
 | How to cut a release | [docs/runbooks/](docs/runbooks/) |
+| The design source the packs grew from | [design/](design/README.md) |
 
 ## Contributing
 

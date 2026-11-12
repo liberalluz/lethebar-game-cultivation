@@ -26,15 +26,15 @@ CI).
 
 Out of scope, deliberately not requirements of this repository: the engine and
 its capabilities; art, sound and fonts (both packages ship no assets); the
-other worlds (`lethebar-game-sanguo`); the cross-run nine-emperor meta
-(`0.6.0`, not shipped); localisation into languages other than `en`.
+other worlds (`lethebar-game-sanguo`); the second act's content volume
+(`0.8.0`, not designed yet); localisation into languages other than `en`.
 
 ## Requirements — P1
 
 | ID | Requirement | Acceptance |
 |---|---|---|
 | `REQ-001` | Each directory under `packs/` builds one package whose manifest `id` equals the directory name, and no two packages share an id. | Building every pack directory yields one archive each; every archive's manifest id matches its directory name; the ids are distinct. |
-| `REQ-002` | An installable archive holds `manifest.json` at its root and nothing else; every other entry sits under `data/`, `assets/` or `i18n/`; no entry is executable, a symlink, or uses `..` or a backslash; an archive holds at most 512 entries, 8 MiB per entry and 32 MiB in total. | A checker accepts both shipped archives and rejects a copy of one that gains a second root file, a symlink, or an entry over a cap. |
+| `REQ-002` | An installable archive holds `manifest.json` at its root and nothing else; every other entry sits under `data/`, `assets/` or `i18n/`; no entry is executable, a symlink, or uses `..` or a backslash; an archive holds at most 500 entries, 4 MiB per entry and 32 MiB in total. | A checker accepts both shipped archives and rejects a copy of one that gains a second root file, a symlink, or an entry over a cap. |
 | `REQ-003` | A package declares a display name for its default locale and for every locale it lists, and a player sees the name for the current interface language, never the id. | With the interface switched between Chinese and English, the package list shows 修仙 and then Cultivation, and shows no package id. |
 | `REQ-004` | For every locale a package declares, every node, every choice label and every label the engine can print from the package's own data has a translation in that locale. | A copy of a package with one node or one label missing from its English table is refused at install; both shipped packages install and show English text on every screen they can reach. |
 | `REQ-005` | A linear package starts at its declared entry node, a choice moves the run to the node it names, and a node with no choices ends the run — unless the package declares a phase machine, in which case a node with no choices does not end it. | Playing the linear package from the first screen reaches an end screen after five nodes; in the dispatch package, the gate node offers no choices and the run continues. |
@@ -48,8 +48,15 @@ other worlds (`lethebar-game-sanguo`); the cross-run nine-emperor meta
 | `REQ-012` | Both packages declare the same collection id and the same collection names, so the interface can group them as one world. | The package list shows both packages under one world entry; a copy with the collection block removed is listed separately. |
 | `REQ-013` | A release is a git tag `pack/<id>/v<version>` that carries the built archive and a descriptor recording the archive's sha256. | For a published tag, downloading both assets and hashing the archive reproduces the value stored in the descriptor. |
 | `REQ-014` | Every pack directory is built and envelope-checked when main moves, and a rejected archive fails the build. | A commit that breaks a pack turns the workflow red; the current main is green on both packages. |
+| `REQ-016` | A name earned in one run outlives it: a run that ends with a living mountain records one name, and the next run starts with the advantages that count buys, while a run that ends in failure records nothing. | A run that reaches the end of its third year leaves the mountain's name count one higher and the next run starts with one field level already worked; a run that loses a disciple leaves the count and the next run's start unchanged. |
+| `REQ-017` | The yearly wave weighs the same every time the same turn is reached: its weight comes from the draw the package declares, and reloading the run does not redraw it. | Reaching a given turn twice, with and without a reload, yields the same wave weight, and that year's tribute equals the weight. |
 
 ## Notes
+
+`REQ-016` and `REQ-017` describe `0.7.0`, not the current build: the data
+the data still predates them: a reader who checks them against `0.6.3`
+will find the older shape, where nothing is remembered between runs. They stay here because they are what
+the next build is judged against.
 
 `REQ-006` is the only requirement that names engine behaviour rather than data:
 the engine computes the step count from the visited nodes, so a package cannot

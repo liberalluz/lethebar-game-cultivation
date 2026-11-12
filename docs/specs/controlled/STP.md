@@ -18,7 +18,7 @@ next, because a miss there is fatal at install; play after that; release last.
 | Test | Covers | Exit |
 |---|---|---|
 | `TC-ID-001` | `REQ-001` | Building each directory produces one archive, and each archive's `manifest.id` equals the directory name. |
-| `TC-ENV-001` | `REQ-002` | `check_pack.py` accepts both archives; a copy with a second root file, a symlink or an entry over 8 MiB is rejected with the reason. |
+| `TC-ENV-001` | `REQ-002` | `check_pack.py` accepts both archives; a copy with a second root file, a symlink or an entry over 4 MiB is rejected with the reason. |
 | `TC-IDN-001` | `REQ-003` | Switching the interface language changes the displayed name between 修仙 and Cultivation, and no id appears on the package list. |
 | `TC-LOC-001` | `REQ-004` | Every node id and every label key of both packages has an English string; removing any one of them makes install fail. |
 | `TC-LIN-001` | `REQ-005` | The linear package reaches an end screen after five nodes; the dispatch package's gate node shows actions instead of ending. |
@@ -35,6 +35,8 @@ next, because a miss there is fatal at install; play after that; release last.
 | `TC-SAV-001` | `REQ-011` | A save is visible only in its own package and restores the node and ledger numbers it captured. |
 | `TC-COL-001` | `REQ-012` | Both packages appear under one world entry; removing the block lists one of them separately. |
 | `TC-REL-001` | `REQ-013` | For a published tag, hashing the downloaded archive reproduces the descriptor's sha256. |
+| `TC-MTA-001` | `REQ-016` | A run that finishes its third year raises the name count by one and the next run starts with one field level; a run that ends in failure leaves both unchanged. |
+| `TC-ROL-001` | `REQ-017` | Reaching the same turn twice, once after a reload, yields the same wave weight, and the year's tribute equals that weight. |
 | `TC-CI-001` | `REQ-014` | A commit with a broken pack turns the workflow red; the current main is green. |
 
 ## What is not tested here

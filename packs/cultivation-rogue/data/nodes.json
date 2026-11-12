@@ -7,12 +7,12 @@
         {
           "label": "我信师尊。",
           "next": "a1-s02-sword",
-          "effects": [{"belief.sword": {"add": 1}}]
+          "effects": [{"belief_sword": {"add": 1}}]
         },
         {
           "label": "我信二师兄。",
           "next": "a1-s02-body",
-          "effects": [{"belief.body": {"add": 1}}]
+          "effects": [{"belief_body": {"add": 1}}]
         }
       ]
     },
@@ -23,7 +23,7 @@
         {
           "label": "再信一次，问下一层怎么练。",
           "next": "a1-voice-sword-believe",
-          "effects": [{"belief.sword": {"add": 1}}]
+          "effects": [{"belief_sword": {"add": 1}}]
         },
         {
           "label": "问他：我若有剑骨，为何不敢让我见掌门？",
@@ -39,7 +39,7 @@
         {
           "label": "再信一次，问金身下一层怎么练。",
           "next": "a1-voice-body-believe",
-          "effects": [{"belief.body": {"add": 1}}]
+          "effects": [{"belief_body": {"add": 1}}]
         },
         {
           "label": "蹲下去看墙缝：这砖是谁换的？",

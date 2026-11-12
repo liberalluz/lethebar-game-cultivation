@@ -1,97 +1,97 @@
 {
   "actions": [
     {
-      "id": "send-apan-herb",
+      "id": "send_apan_herb",
       "label": "派阿磐去药谷",
       "effects": [
         {"stone": {"add": 3}},
-        {"injury.apan": {"add": 1}},
-        {"trust.apan": {"add": 1}}
+        {"injury_apan": {"add": 1}},
+        {"trust_apan": {"add": 1}}
       ],
       "requires": [
         {"key": "gate", "op": "gte", "value": 1},
-        {"key": "injury.apan", "op": "lte", "value": 1}
+        {"key": "injury_apan", "op": "lte", "value": 1}
       ]
     },
     {
-      "id": "send-aying-herb",
+      "id": "send_aying_herb",
       "label": "派阿萤去药谷",
       "effects": [
         {"stone": {"add": 4}},
-        {"injury.aying": {"add": 1}},
-        {"greed.aying": {"add": 1}}
+        {"injury_aying": {"add": 1}},
+        {"greed_aying": {"add": 1}}
       ],
       "requires": [
         {"key": "gate", "op": "gte", "value": 1},
-        {"key": "injury.aying", "op": "lte", "value": 1}
+        {"key": "injury_aying", "op": "lte", "value": 1}
       ]
     },
     {
-      "id": "send-asu-herb",
+      "id": "send_asu_herb",
       "label": "派阿素去药谷",
       "effects": [
         {"stone": {"add": 3}},
-        {"injury.asu": {"add": 1}},
-        {"trust.asu": {"add": 1}}
+        {"injury_asu": {"add": 1}},
+        {"trust_asu": {"add": 1}}
       ],
       "requires": [
         {"key": "gate", "op": "gte", "value": 1},
-        {"key": "injury.asu", "op": "lte", "value": 1}
+        {"key": "injury_asu", "op": "lte", "value": 1}
       ]
     },
     {
-      "id": "send-apan-ruin",
+      "id": "send_apan_ruin",
       "label": "派阿磐去废墟",
       "effects": [
         {"stone": {"add": 5}},
-        {"injury.apan": {"add": 2}},
-        {"greed.apan": {"add": 1}}
+        {"injury_apan": {"add": 2}},
+        {"greed_apan": {"add": 1}}
       ],
       "requires": [
         {"key": "gate", "op": "gte", "value": 1},
-        {"key": "injury.apan", "op": "lte", "value": 1}
+        {"key": "injury_apan", "op": "lte", "value": 1}
       ]
     },
     {
-      "id": "send-aying-ruin",
+      "id": "send_aying_ruin",
       "label": "派阿萤去废墟",
       "effects": [
         {"stone": {"add": 4}},
-        {"injury.aying": {"add": 2}},
-        {"greed.aying": {"add": 1}}
+        {"injury_aying": {"add": 2}},
+        {"greed_aying": {"add": 1}}
       ],
       "requires": [
         {"key": "gate", "op": "gte", "value": 1},
-        {"key": "injury.aying", "op": "lte", "value": 1}
+        {"key": "injury_aying", "op": "lte", "value": 1}
       ]
     },
     {
-      "id": "send-asu-ruin",
+      "id": "send_asu_ruin",
       "label": "派阿素去废墟",
       "effects": [
         {"stone": {"add": 3}},
-        {"injury.asu": {"add": 2}},
-        {"greed.asu": {"add": 2}}
+        {"injury_asu": {"add": 2}},
+        {"greed_asu": {"add": 2}}
       ],
       "requires": [
         {"key": "gate", "op": "gte", "value": 1},
-        {"key": "injury.asu", "op": "lte", "value": 1}
+        {"key": "injury_asu", "op": "lte", "value": 1}
       ]
     },
     {
       "id": "rest",
       "label": "歇一日",
       "effects": [
-        {"injury.apan": {"add": -1}},
-        {"injury.aying": {"add": -1}},
-        {"injury.asu": {"add": -1}}
+        {"injury_apan": {"add": -1}},
+        {"injury_aying": {"add": -1}},
+        {"injury_asu": {"add": -1}}
       ],
       "requires": [
         {"key": "gate", "op": "gte", "value": 1}
       ]
     },
     {
-      "id": "dig-wall",
+      "id": "dig_wall",
       "label": "上山取土，垒墙",
       "costs": {"stone": {"add": -4}},
       "effects": [
@@ -104,7 +104,7 @@
       ]
     },
     {
-      "id": "tend-field",
+      "id": "tend_field",
       "label": "带人去药谷开田",
       "costs": {"stone": {"add": -3}},
       "effects": [

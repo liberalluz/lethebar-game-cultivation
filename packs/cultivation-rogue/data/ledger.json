@@ -1,7 +1,7 @@
 {
   "resources": [
     {
-      "id": "belief.sword",
+      "id": "belief_sword",
       "label": "剑骨",
       "init": 0,
       "min": 0,
@@ -9,7 +9,7 @@
       "labels": {"0": "不信", "1": "将信将疑", "2": "深信", "3": "深信不疑"}
     },
     {
-      "id": "belief.body",
+      "id": "belief_body",
       "label": "金身",
       "init": 0,
       "min": 0,
@@ -97,14 +97,14 @@
       "labels": {"0": "仓里有粮", "1": "一颗也不剩"}
     },
     {
-      "id": "trust.apan",
+      "id": "trust_apan",
       "label": "阿磐的信",
       "init": 2,
       "min": 0,
       "max": 5
     },
     {
-      "id": "injury.apan",
+      "id": "injury_apan",
       "label": "阿磐的伤",
       "init": 0,
       "min": 0,
@@ -112,7 +112,7 @@
       "labels": {"0": "没伤", "1": "带伤", "2": "伤重", "3": "回不来了"}
     },
     {
-      "id": "greed.apan",
+      "id": "greed_apan",
       "label": "阿磐的贪",
       "init": 0,
       "min": 0,
@@ -120,14 +120,14 @@
       "labels": {"0": "不算计", "1": "多看了一眼", "2": "伸手了", "3": "心野了"}
     },
     {
-      "id": "trust.aying",
+      "id": "trust_aying",
       "label": "阿萤的信",
       "init": 2,
       "min": 0,
       "max": 5
     },
     {
-      "id": "injury.aying",
+      "id": "injury_aying",
       "label": "阿萤的伤",
       "init": 0,
       "min": 0,
@@ -135,7 +135,7 @@
       "labels": {"0": "没伤", "1": "带伤", "2": "伤重", "3": "回不来了"}
     },
     {
-      "id": "greed.aying",
+      "id": "greed_aying",
       "label": "阿萤的贪",
       "init": 0,
       "min": 0,
@@ -143,14 +143,14 @@
       "labels": {"0": "不算计", "1": "多看了一眼", "2": "伸手了", "3": "心野了"}
     },
     {
-      "id": "trust.asu",
+      "id": "trust_asu",
       "label": "阿素的信",
       "init": 2,
       "min": 0,
       "max": 5
     },
     {
-      "id": "injury.asu",
+      "id": "injury_asu",
       "label": "阿素的伤",
       "init": 0,
       "min": 0,
@@ -158,7 +158,7 @@
       "labels": {"0": "没伤", "1": "带伤", "2": "伤重", "3": "回不来了"}
     },
     {
-      "id": "greed.asu",
+      "id": "greed_asu",
       "label": "阿素的贪",
       "init": 0,
       "min": 0,

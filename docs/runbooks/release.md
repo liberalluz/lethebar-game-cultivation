@@ -33,17 +33,33 @@ is the normal state right after a release. `--write` removes only the fragments
 it consumed. The pack's version passed here must equal the one in
 `manifest.json` and the tag.
 
+## Write the release note
+
+The text the release page shows is a file in this repository:
+`product/release-notes/<id>/<version>.en.md`, one file per pack and version,
+English only. Write it before tagging, keep it to what a player needs (what
+changed, what still does not work), and pass the same file to
+`gh release edit --notes-file` after publishing; `closeout.py --release` then
+copies the published body into the evidence directory byte for byte. A note
+assembled in two languages, or written after the fact from memory, is how a
+release ends up describing a build that does not exist.
+
 ## Build and check
 
 ```bash
 python infra/tool/release/pack.py build packs/cultivation --out dist
 python infra/checks/check_pack.py dist/cultivation.zip
+python infra/checks/check_pack_data.py packs/cultivation
 python infra/tool/release/pack.py hash dist/cultivation.zip
+python infra/tool/release/pack.py badge . --check README.md
 ```
 
 `build` names the archive from the manifest id; `check_pack` reads the archive,
-not the tree, and rejects anything the envelope does not allow; `hash` writes
-`dist/cultivation-1.0.0.json` beside it.
+not the tree, and rejects anything the envelope does not allow; `check_pack_data`
+reads the tree and rejects ids, references and label lines the engine would
+refuse at install time; `hash` writes `dist/cultivation-1.0.0.json` beside it;
+`badge --check` fails when the generated table in a README no longer matches the
+manifests. A green envelope alone does not mean the archive installs.
 
 Both tools have a self-test, and both run from this repository's copies:
 
@@ -104,7 +120,8 @@ git push origin pack/cultivation/v1.0.0
 ```
 
 or publish from the workstation, which creates the tag at the default branch
-head if it does not exist yet:
+head if it does not exist yet. The engine's own `publish.py` publishes engine
+releases only; a pack is published by `pack.py publish`:
 
 ```bash
 python infra/tool/release/pack.py publish dist/cultivation.zip \

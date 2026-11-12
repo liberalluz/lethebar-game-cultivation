@@ -31,7 +31,7 @@ jobs:
       # The tag names the engine release whose tools judge this repository.
       # It is not the `engine` range in a manifest: that range is about the
       # Godot runtime (`>=4.7.0 <5.0.0`) and does not move with this line.
-      ENGINE_REF: v0.7.5
+      ENGINE_REF: v0.8.0
     steps:
       - name: Check out this repository
         uses: actions/checkout@v4

@@ -1,12 +1,10 @@
 {
-  "engineTag": "v0.7.5",
-  "tagCommit": "0eb5e0d99875e2ae6a3439143a6f4483bc1d9c3e",
+  "engineTag": "v0.8.0",
+  "tagCommit": "674a407d8b83ac0a4d5fb5492049ff39322b5e57",
   "files": {
-    "infra/tool/release/pack.py": "9e791360e68d0a329ee285c4574063b3c04915c9cec0e14ead5aaedb3a26fdf7",
+    "infra/tool/release/pack.py": "1627eb1e98ecd0ee9b6607c0215034fd489f1896e1177cc743bbc9a3a6b67406",
     "infra/tool/release/preflight.py": "66ecd6cc721ada607efc5205fda2efa32f406919417b6f9e7a27d519f0415386",
     "infra/checks/check_pack.py": "fcb44da3a2a014681af0f1d5ee3b1dca82c19621132333ab96063b37d0a34923",
     "infra/checks/fixtures.py": "8e7c2cbf97029c2a53606f3c3eab2364917c3cb5432c0438c8755443a3ee020f"
-  },
-  "gate": "infra/ci/author-gate.yml",
-  "gateEngineRef": "v0.7.5"
+  }
 }

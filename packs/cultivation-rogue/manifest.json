@@ -1,6 +1,6 @@
 {
   "id": "cultivation-rogue",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "specVersion": "2.0.0",
   "kind": "bundle",
   "requires": [],
@@ -48,6 +48,6 @@
       "en": "The master says you were born with a sword in your bones. The second brother says your body is the weapon. Both need you to believe it."
     },
     "audience": "teens",
-    "minutes": 8
+    "minutes": 22
   }
 }

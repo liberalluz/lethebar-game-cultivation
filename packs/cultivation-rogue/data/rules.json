@@ -1,11 +1,11 @@
 {
   "rules": [
     {
-      "when": {"key": "belief.sword", "op": "gte", "value": 2},
+      "when": {"key": "belief_sword", "op": "gte", "value": 2},
       "set": {"qi": {"add": 1}}
     },
     {
-      "when": {"key": "belief.body", "op": "gte", "value": 2},
+      "when": {"key": "belief_body", "op": "gte", "value": 2},
       "set": {"qi": {"add": 1}}
     },
     {
@@ -86,7 +86,7 @@
     },
     {
       "when": {"key": "year", "op": "gte", "value": 3},
-      "set": {"seat": {"add": 1}, "year": {"value": 0}, "day": {"value": 0}, "wall": {"add": -3}, "field": {"add": -2}, "stone": {"add": 10}, "trust.apan": {"value": 2}, "trust.aying": {"value": 2}, "trust.asu": {"value": 2}, "injury.apan": {"value": 0}, "injury.aying": {"value": 0}, "injury.asu": {"value": 0}, "greed.apan": {"value": 0}, "greed.aying": {"value": 0}, "greed.asu": {"value": 0}}
+      "set": {"seat": {"add": 1}, "year": {"value": 0}, "day": {"value": 0}, "wall": {"add": -3}, "field": {"add": -2}, "stone": {"add": 10}, "trust_apan": {"value": 2}, "trust_aying": {"value": 2}, "trust_asu": {"value": 2}, "injury_apan": {"value": 0}, "injury_aying": {"value": 0}, "injury_asu": {"value": 0}, "greed_apan": {"value": 0}, "greed_aying": {"value": 0}, "greed_asu": {"value": 0}}
     }
   ]
 }

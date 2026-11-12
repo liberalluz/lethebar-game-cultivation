@@ -12,9 +12,9 @@
     {"at": 289, "title": "第九代"}
   ],
   "fail": [
-    {"when": {"key": "injury.apan", "op": "gte", "value": 3}, "reason": "阿磐没有回来。"},
-    {"when": {"key": "injury.aying", "op": "gte", "value": 3}, "reason": "阿萤没有回来。"},
-    {"when": {"key": "injury.asu", "op": "gte", "value": 3}, "reason": "阿素没有回来。"},
+    {"when": {"key": "injury_apan", "op": "gte", "value": 3}, "reason": "阿磐没有回来。"},
+    {"when": {"key": "injury_aying", "op": "gte", "value": 3}, "reason": "阿萤没有回来。"},
+    {"when": {"key": "injury_asu", "op": "gte", "value": 3}, "reason": "阿素没有回来。"},
     {"when": {"key": "ruin", "op": "gte", "value": 1}, "reason": "米缸空了。你看着他们分最后一碗。"},
     {"when": {"key": "breach", "op": "gte", "value": 3}, "reason": "雪线压过墙头，没人再数还剩几个人。"},
     {"when": {"key": "breach", "op": "gte", "value": 2}, "reason": "雪来得太早，墙只垒了一半。"},

@@ -182,9 +182,16 @@ def delete_branch(repo: Path, branch: str) -> bool:
     )
     if remote.returncode != 0:
         message = (remote.stderr or remote.stdout).strip().splitlines()
-        print(f"branch  origin/{branch}: {message[-1] if message else 'failed'}")
-        return False
-    print(f"branch  deleted origin/{branch}")
+        last = message[-1] if message else "failed"
+        # `delete_branch_on_merge` may have removed it already; a missing ref is
+        # the state we wanted, not a failure.
+        if "HTTP 404" in last or "HTTP 422" in last or "does not exist" in last:
+            print(f"branch  origin/{branch}: already gone")
+        else:
+            print(f"branch  origin/{branch}: {last}")
+            return False
+    else:
+        print(f"branch  deleted origin/{branch}")
     local = subprocess.run(
         ["git", "-C", str(repo), "branch", "-D", branch],
         capture_output=True,
